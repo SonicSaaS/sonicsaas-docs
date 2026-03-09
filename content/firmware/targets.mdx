@@ -1,0 +1,38 @@
+# Firmware Targets
+
+Firmware targets let you define the expected firmware versions for your fleet. By setting minimum and target versions per device model, you can quickly identify devices that need attention and plan upgrade campaigns.
+
+## How Targets Work
+
+A firmware target defines two version thresholds for a device model:
+
+- **Minimum version** — the lowest acceptable firmware version. Devices below this are flagged for urgent attention.
+- **Target version** — the recommended firmware version. Devices below this are candidates for upgrade.
+
+When the platform audits your fleet against these targets, each device gets a status based on where its current firmware falls relative to the thresholds.
+
+## Setting Targets
+
+Navigate to the firmware targets page to create or edit targets. You can set targets at the model level (e.g., all TZ 470 devices should run a specific version) or override targets for individual devices.
+
+When creating a target:
+
+1. Select the device model
+2. Set the minimum version (optional)
+3. Set the target version
+4. Add notes explaining the target (e.g., "CVE-2025-XXXX fix" or "Required for new VPN feature")
+
+## MySonicWall Integration
+
+If you've connected MySonicWall, firmware availability data is synced automatically. The platform can tell you not just what version you should be running, but what versions are available for download for each device model.
+
+## Staged Rollouts
+
+When upgrading firmware across your fleet, we recommend a staged approach:
+
+1. **Set targets** for the desired version
+2. **Review the audit** to see which devices need updates
+3. **Schedule updates** in batches, starting with non-critical devices
+4. **Verify** each batch before proceeding to the next
+
+See [Update Scheduling](/firmware/scheduling) for details on scheduling fleet-wide firmware updates.

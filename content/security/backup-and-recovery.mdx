@@ -1,0 +1,91 @@
+# Backup & Recovery
+
+SonicSaaS provides a documented disaster recovery plan with defined recovery objectives. Because the platform is self-hosted, you control your backup strategy and recovery procedures.
+
+## Recovery Objectives
+
+| Metric | Target | Description |
+| --- | --- | --- |
+| **RTO** (Recovery Time Objective) | 4 hours | Maximum time to restore full platform functionality |
+| **RPO** (Recovery Point Objective) | 1 hour | Maximum data loss window (with hourly backups configured) |
+| **MTTR** (Mean Time to Repair) | 2 hours | Expected recovery time when backups are available and tested |
+
+These targets apply to the self-hosted deployment model using Docker Compose.
+
+## What Needs Backing Up
+
+### Database
+
+The PostgreSQL database contains all application data — devices, users, audit logs, policies, and configuration. This is the most critical component to back up.
+
+We recommend automated hourly database backups using `pg_dump`, with a 30-day retention period. The backup script should verify that dumps are non-empty and rotate old backups automatically.
+
+### Encryption Keys
+
+Your encryption keys are critical — without them, encrypted credentials cannot be recovered. Back up your environment file (`.env`) to a secure offline location:
+
+- **Device encryption key** — required to decrypt all device credentials. Loss means all stored credentials become unrecoverable.
+- **Auth encryption key** — required to decrypt MFA secrets. Loss means users will need to re-enroll MFA.
+- **Auth secret** — used for session management. Loss only invalidates active sessions (users re-authenticate).
+- **Database password** — required for database access.
+
+Store key backups separately from database backups — ideally in an encrypted password manager vault or offline encrypted storage.
+
+### Configuration Backup Files
+
+Device configuration backups are stored on disk and are already encrypted with AES-256-GCM. Include the backup storage directory in your host-level filesystem backups.
+
+## Recovery Procedures
+
+### Database Recovery
+
+If the database is corrupted or lost:
+
+1. Stop the application container
+2. Restore from the most recent backup
+3. Verify data integrity (check device count, user count, and audit log entries)
+4. Restart the application
+5. Verify the health check endpoint responds
+
+### Full Stack Recovery (New Host)
+
+If the entire host needs to be rebuilt:
+
+1. Set up Docker and Docker Compose on the new host
+2. Deploy the application
+3. Restore your environment file from secure backup
+4. Start the stack and restore the database from backup
+5. Restore configuration backup files
+6. Verify the application responds and credentials decrypt correctly
+
+### Application Recovery (Container Crash)
+
+Application containers are configured to restart automatically on failure. If a container fails persistently, rebuild it from the image. The application is stateless — all state lives in PostgreSQL.
+
+### Accidental Data Deletion
+
+1. Stop the application to prevent further writes
+2. Identify the most recent backup before the deletion occurred
+3. Restore from that backup
+4. Review audit logs to understand what was deleted and by whom
+
+## Recovery Verification
+
+After any recovery, verify:
+
+- Application responds to health checks
+- Users can sign in
+- Device list loads correctly
+- Audit log contains pre-incident entries
+- A test device connection succeeds (confirms credentials decrypt correctly)
+- Configuration backup files are accessible
+
+## Annual DR Testing
+
+We recommend performing a full disaster recovery test annually:
+
+- Restore from backup to a test environment
+- Verify RPO: confirm backup freshness matches your target
+- Verify RTO: time the full recovery procedure
+- Test credential decryption with the backed-up encryption key
+- Document results and update procedures based on lessons learned

@@ -1,0 +1,53 @@
+# Getting Started
+
+SonicSaaS is a secure fleet management platform for MSPs. It wraps your SonicWall firewalls with RBAC, encrypted credential storage, immutable audit trails, and automated policy enforcement — so you can manage hundreds of devices without touching each one individually.
+
+## First Steps
+
+After logging in for the first time, here's what to do:
+
+1. **Add your first device** — Go to [Devices → Add Device](/devices/adding-devices) and enter the management IP, port, and credentials for a SonicWall firewall.
+2. **Check the Fleet Overview** — Once the device connects, the [Fleet Overview](/getting-started) dashboard shows health metrics, compliance scores, and any issues requiring attention.
+3. **Take a backup** — Navigate to [Configuration](/configurations) and run a fleet backup to capture your current device configs.
+4. **Set firmware targets** — Go to [Firmware](/firmware) and define target firmware versions per device model.
+5. **Configure integrations** — Connect [ITGlue](/integrations/itglue), [MySonicWall](/integrations/mysonicwall), or other services under [Integrations](/integrations).
+
+## Key Concepts
+
+### Device Status
+
+Every device in your fleet has a status that reflects its current connectivity:
+
+| Status | Meaning | Action Required |
+| --- | --- | --- |
+| **Accessible** | Online, API responding | None — operating normally |
+| **Unreachable** | IP/DNS not reachable | Check network connectivity, verify host address |
+| **AuthFailed** | Credentials invalid | Update username/password in device settings |
+| **Timeout** | Connection timed out | Check network latency, increase timeout if needed |
+| **PortClosed** | Management port blocked | Open port 443 (or configured port) on the firewall |
+| **ApiDisabled** | Management API is off | Enable the management API on the device |
+| **BadURL** | Invalid host or port | Fix the IP/hostname/port in device settings |
+| **Unknown** | Cannot determine status | Check device connectivity and retry |
+
+### Team Isolation
+
+All data in SonicSaaS is scoped to your team. Devices, configurations, audit logs, and policies are never shared across teams. Each team member sees only the devices belonging to their team.
+
+### Encrypted Credentials
+
+Device credentials (username/password) are encrypted at rest using AES-256-GCM. They are only decrypted at request time on the server — never sent to the browser or exposed in logs.
+
+### Audit Trail
+
+Every action in SonicSaaS is logged: device connections, configuration changes, firmware updates, credential access, and more. The audit log is immutable and designed for SOC 2 compliance.
+
+## Navigation
+
+Use the sidebar to navigate between sections. The main areas are:
+
+- **Devices** — Manage your firewall fleet
+- **Firmware** — Audit and update firmware versions
+- **Configuration** — Backup and restore device configs
+- **Policies** — Define compliance rules across your fleet
+- **Operations** — Track running and completed fleet operations
+- **Integrations** — Connect external services (ITGlue, MySonicWall, Splunk, etc.)

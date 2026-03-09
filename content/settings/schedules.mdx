@@ -1,0 +1,33 @@
+# Schedules
+
+The schedules page lets you configure automated recurring tasks — device polling, backup operations, user sync, and integration sync.
+
+## Schedule Types
+
+| Schedule | Purpose |
+| --- | --- |
+| **Device polling** | How often the platform checks each device's status and pulls configuration data |
+| **Fleet backup** | Automated configuration backups on a recurring schedule |
+| **User sync** | Automated local user account synchronization |
+| **Integration sync** | Scheduled sync with ITGlue, MySonicWall, and other integrations |
+
+## Configuration
+
+Each schedule type can be configured with:
+
+- **Interval** — how often the task runs
+- **Scope** — which devices or integrations are included
+- **Timing** — when the task runs (to avoid peak hours)
+
+## Best Practices
+
+- **Stagger schedules** — avoid running all automated tasks at the same time
+- **Match polling to needs** — more frequent polling for critical devices, less frequent for stable ones
+- **Schedule backups during off-hours** — reduce impact on device performance
+- **Monitor schedule health** — check for failed runs and adjust intervals if needed
+
+## Related
+
+- [Operational Settings](/settings/operational-settings) — configure timeouts and concurrency
+- [Fleet Backup](/configurations/backup) — backup operations
+- [User Sync](/local-users/sync) — user synchronization

@@ -1,0 +1,53 @@
+# Devices
+
+The Devices page is the central hub for managing your SonicWall fleet. It shows every firewall in your team with real-time status, connectivity, and quick actions.
+
+## Fleet Table
+
+The device table displays:
+
+| Column | Description |
+| --- | --- |
+| **Name** | Device friendly name |
+| **Status** | Current connectivity status (color-coded badge) |
+| **Host:Port** | Management IP/hostname and port |
+| **Serial Number** | SonicWall hardware serial |
+| **Organization** | Which organization the device belongs to (visible when not filtered) |
+| **Last Seen** | When the device was last successfully polled |
+| **Tags** | Custom tags for filtering and grouping |
+
+You can **search**, **sort**, and **filter** the table by any column. Use the organization filter in the sidebar to narrow down to a specific client's devices.
+
+## Device Actions
+
+From the device table, you can:
+
+- **View Details** — Click a device row to see its full detail page (firmware, backups, policies, VPN, etc.)
+- **Edit** — Update device name, host, port, or credentials
+- **Delete** — Remove a device from your fleet (cascades to all related data)
+
+## Device Detail Pages
+
+Clicking a device opens its detail view with tabs for:
+
+- **Summary** — Device info, model, firmware, serial, last poll status
+- **Firmware** — Current firmware version and upgrade eligibility
+- **Backups** — Configuration backups for this device
+- **Policies** — Device-level policy overrides
+- **Security** — Security services status (IPS, AV, content filter)
+- **VPN** — IPSec and SSL VPN tunnel status
+- **WAN** — WAN interface and ISP configuration
+- **Network** — Interface and zone configuration
+- **Users** — Local user accounts on the device
+- **Rules** — Firewall access rules
+- **Diagnostics** — Live diagnostic tools
+- **History** — Audit trail for this device
+- **Settings** — Device-specific configuration
+
+## Filtering by Organization
+
+If your team manages devices for multiple client organizations, the **Organization** column helps you identify which client each device belongs to. Use the sidebar org filter to show only one client's devices at a time — the Organization column auto-hides when filtered.
+
+## Adding Devices
+
+See [Adding Your First Device](/getting-started/adding-devices) for step-by-step instructions on adding single devices or bulk importing from CSV.

@@ -1,0 +1,54 @@
+# Device Detail
+
+When you select a device from the fleet table, you'll see a detailed view with tabs covering every aspect of that device's configuration, health, and history.
+
+## Overview Tab
+
+The overview tab provides a summary dashboard for the device, including:
+
+- **Connection status** — current reachability and last successful connection
+- **Device information** — model, serial number, firmware version, uptime
+- **WAN / ISP information** — public IP, ISP name, geographic location
+- **Summary cards** — quick counts for local users, MFA coverage, backup status, security services, and configuration items
+- **Recent activity** — latest operations and events for this device
+- **Notes** — free-text notes you can attach to the device
+
+## Configuration Tabs
+
+Several tabs let you inspect and manage the device's configuration:
+
+- **Security Services** — status of IPS, antivirus, anti-spyware, content filtering, geo-IP blocking, botnet filtering, and other security features
+- **Local Users** — local user accounts on the firewall, MFA status, and unauthorized account detection
+- **VPN** — IPSec and SSL-VPN tunnel status
+- **WAN** — WAN interface configuration, dual-WAN status, and ISP details
+- **Network** — interface configuration, IP addresses, and gateway information
+- **Zones** — network zone assignments and interface mappings
+- **Objects** — address objects, service objects, and user objects
+- **Groups** — local user groups and role assignments
+- **DHCP** — DHCP server configuration, address pools, and active leases
+- **Rules** — firewall access rules organized by zone
+- **Policies** — access policies, NAT policies, and service groups
+
+## Operations Tabs
+
+- **Firmware** — current firmware version, target version, staged updates, and deployment history
+- **Backups** — configuration backup history with the ability to download or compare backups
+- **HA** — high availability cluster status, sync state, and failover information (for HA-paired devices)
+- **Diagnostics** — connection testing and network path diagnostics
+- **Restart** — device reboot controls (immediate or scheduled)
+
+## Monitoring Tabs
+
+- **Metrics** — live and historical charts for CPU, memory, and throughput
+- **Logs** — device event logs and connection logs
+- **Licensing** — license keys, expiration dates, and support tier
+- **History** — full audit trail of all connections, operations, and changes for this device
+- **Drift** — configuration drift detection comparing current state against the last known configuration
+
+## Device Settings
+
+The settings tab lets you configure how SonicSaaS manages this device:
+
+- API version and connection profile
+- Polling schedule and intervals
+- Credential management (update the stored credentials)

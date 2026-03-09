@@ -1,0 +1,39 @@
+# Operational Settings
+
+Operational settings control how SonicSaaS interacts with your managed firewalls — polling frequency, concurrency limits, timeouts, and other parameters that affect fleet operations.
+
+## What You Can Configure
+
+- **Poll intervals** — how often the platform checks device status and pulls configuration data
+- **Concurrency limits** — how many devices can be operated on simultaneously during fleet operations
+- **Connection timeouts** — how long to wait for a device to respond before marking it unreachable
+- **Operation defaults** — default settings for backup, firmware, and other fleet operations
+
+## Team-Overridable Settings
+
+Operational settings use a layered configuration model. The platform provides sensible defaults, but your team can override them to match your environment:
+
+- **Platform defaults** — conservative settings suitable for most deployments
+- **Team overrides** — your customized values that take precedence
+
+## Tuning Recommendations
+
+### Poll Intervals
+
+- **More frequent polling** gives you fresher data and faster change detection, but increases load on your devices and network
+- **Less frequent polling** reduces load but means changes take longer to appear in the platform
+
+### Concurrency
+
+- **Higher concurrency** completes fleet operations faster but may overwhelm devices or network
+- **Lower concurrency** is safer for large fleets or devices on slower connections
+
+### Timeouts
+
+- Increase timeouts if you manage devices on slow or high-latency connections
+- The default timeouts work well for LAN-connected devices
+
+## Related
+
+- [Schedules](/settings/schedules) — configure automated schedules
+- [General Settings](/settings/general) — team and notification settings

@@ -1,0 +1,72 @@
+# Authentication & MFA
+
+SonicSaaS uses database-backed sessions with support for multi-factor authentication and single sign-on. All authentication flows include rate limiting, account lockout, and audit logging.
+
+## Session Management
+
+When you sign in, a session is created in the database and a secure cookie is set in your browser. Sessions are configured for security by default:
+
+- **Session lifetime**: 24 hours, with automatic refresh during active use
+- **Secure cookies**: HTTP-only (not accessible to JavaScript), secure flag in production, same-site protection
+- **Session metadata**: Each session records IP address, user agent, and creation time for audit purposes
+- **Instant revocation**: Sessions can be revoked immediately — for example, when you change your password, all other sessions are invalidated
+
+## Multi-Factor Authentication (MFA)
+
+SonicSaaS supports TOTP-based multi-factor authentication using any standard authenticator app (Google Authenticator, Authy, 1Password, etc.).
+
+### How it works
+
+1. **Enable MFA** from your account security settings
+2. **Scan the QR code** with your authenticator app
+3. **Enter a verification code** to confirm setup
+4. **Save your recovery codes** — 8 single-use codes for emergency access
+
+Once enabled, MFA is required on every sign-in. After entering your password, you'll be prompted for a 6-digit code from your authenticator app.
+
+### Recovery codes
+
+If you lose access to your authenticator app, use one of your 8 recovery codes to sign in. Each code can only be used once. Recovery codes are hashed before storage — they cannot be retrieved after initial display.
+
+### MFA security details
+
+- TOTP codes follow RFC 6238 (30-second intervals, 6-digit codes)
+- MFA secrets are encrypted at rest with AES-256-GCM using a dedicated encryption key
+- Enrollment has a 10-minute window — if not completed, the pending secret is discarded
+- Disabling MFA requires entering a current TOTP code and triggers session revocation
+
+## Single Sign-On (SSO)
+
+SonicSaaS supports Microsoft Entra ID (Azure AD) for single sign-on. When configured, users can sign in with their organizational Microsoft account.
+
+SSO is environment-gated — it activates only when the Entra ID credentials are configured in your deployment. Users are automatically linked to teams based on their email domain.
+
+## Password Security
+
+Passwords are protected with multiple layers:
+
+- **Hashing**: All passwords are hashed with bcrypt before storage — plaintext passwords are never saved
+- **Complexity requirements**: Minimum length, character class diversity, and optional breach database checking
+- **Account lockout**: After repeated failed sign-in attempts, the account is temporarily locked (both per-IP and per-account limits)
+- **Timing attack prevention**: Sign-in responses take the same amount of time regardless of whether the email exists, preventing account enumeration
+
+## Password Reset
+
+If you forget your password, the reset flow is designed to be both secure and usable:
+
+1. Request a reset link from the sign-in page
+2. A time-limited token is emailed to you (expires in 15 minutes)
+3. Set your new password using the link
+4. All existing sessions are revoked — you'll need to sign in again on all devices
+
+The reset page always shows the same confirmation message regardless of whether the email exists, preventing account enumeration.
+
+## Rate Limiting
+
+Authentication endpoints are protected with tiered rate limits to prevent credential stuffing and brute-force attacks:
+
+- **Sign-in / sign-up**: Limited per IP address and per account
+- **Device operations**: Limited per user
+- **API routes**: Separate limits for read, write, and operation requests
+
+Rate limits use sliding windows — they reset gradually rather than all at once.

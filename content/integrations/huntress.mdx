@@ -1,0 +1,29 @@
+# Huntress
+
+The Huntress integration connects SonicSaaS to your Huntress EDR platform to provide endpoint detection and response visibility alongside your firewall management.
+
+## What It Provides
+
+- **Agent status** — see which devices have the Huntress agent installed and reporting
+- **Coverage gaps** — identify devices that should have Huntress but don't
+- **Health monitoring** — track agent health alongside firewall health
+
+## Setup
+
+To configure the Huntress integration:
+
+1. Navigate to **Integrations → Huntress**
+2. Enter your Huntress API credentials
+3. Map Huntress organizations to SonicSaaS organizations
+4. Save and run an initial sync
+
+Your Huntress API credentials are encrypted at rest using AES-256-GCM.
+
+## How Sync Works
+
+The platform periodically pulls agent status from Huntress and correlates it with your managed devices. This gives you a unified view of both network security (firewalls) and endpoint security (EDR) in one dashboard.
+
+## Related
+
+- [Security Services](/security-services) — fleet-wide security feature status
+- [Integrations Overview](/integrations) — all available integrations

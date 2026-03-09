@@ -1,0 +1,60 @@
+# Operations
+
+The Operations page tracks all fleet operations — firmware updates, configuration backups, restores, reboots, and more. Every operation is logged with full audit detail for SOC 2 compliance.
+
+## Operation History
+
+The operations table shows:
+
+| Column | Description |
+| --- | --- |
+| **Operation** | Name and type of operation |
+| **Type** | Category (Firmware Update, Backup, Restore, Reboot, etc.) |
+| **Status** | Current state (Running, Completed, Failed, Cancelled) |
+| **Progress** | How many devices have completed vs total |
+| **Initiated By** | Which user started the operation |
+| **Started** | Timestamp when the operation began |
+| **Duration** | Time elapsed (or total time if completed) |
+
+Click any operation to see its detail view with per-device status breakdown.
+
+## Operation Status
+
+| Status | Meaning |
+| --- | --- |
+| **Running** | Operation is actively processing devices |
+| **Completed** | All devices finished successfully |
+| **Failed** | One or more devices failed (partial success is possible) |
+| **Cancelled** | User cancelled the operation before completion |
+
+## Per-Device Status
+
+Within each operation, individual devices have their own status:
+
+- **Pending** — Waiting to be processed
+- **In Progress** — Currently being processed
+- **Completed** — Finished successfully
+- **Failed** — Failed with an error (error message shown)
+- **Skipped** — Skipped due to a pre-check failure (e.g., device offline)
+
+## Concurrency
+
+Fleet operations process multiple devices in parallel (configurable concurrency limit). This means a large operation across 500 devices doesn't need to wait for each device to finish sequentially.
+
+## Cancellation
+
+Running operations can be cancelled. When cancelled:
+- Devices currently being processed will finish their current step
+- Pending devices will be skipped
+- The operation is marked as Cancelled in the history
+
+## Audit Trail
+
+Every operation generates audit records:
+- Who initiated it
+- Which devices were targeted
+- The result per device
+- Any errors encountered
+- Configuration changes made (as JSONB diff)
+
+View the full audit trail at **Admin → Audit Log**.

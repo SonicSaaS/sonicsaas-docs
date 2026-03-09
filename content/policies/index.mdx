@@ -1,0 +1,63 @@
+# Policies
+
+The Policy Engine enforces compliance rules across your fleet. Policies are evaluated at three levels — global, organization, and device — giving you granular control over fleet-wide standards with per-client or per-device overrides.
+
+## How Policies Work
+
+Each policy module defines a specific compliance area (firmware, security services, local users, backups, etc.). For each module, you can set rules at three levels:
+
+1. **Global** — Applies to all devices in your fleet
+2. **Organization** — Overrides the global policy for a specific client/organization
+3. **Device** — Overrides both global and org policies for a specific device
+
+The most specific policy wins: device > organization > global.
+
+## Policy Modules
+
+SonicSaaS includes policy modules for:
+
+| Module | What It Checks |
+| --- | --- |
+| **Firmware** | Minimum firmware version per device model |
+| **Security Services** | IPS, antivirus, anti-spyware, content filter status |
+| **Local Users** | MFA requirements, unauthorized user detection |
+| **Backups** | Backup frequency, retention, and coverage |
+| **Passwords** | Password complexity and rotation requirements |
+
+Each module follows a **get/test/set** pattern:
+- **Get** — Read the current state from the device
+- **Test** — Compare against the policy rules
+- **Set** — Optionally push the correct configuration to the device
+
+## Configuring Policies
+
+1. Navigate to **Policies** in the sidebar
+2. Select a policy module
+3. Set the rules at the desired level (global, organization, or device)
+4. Save the configuration
+
+Policies are evaluated during scheduled polls and on-demand compliance checks.
+
+## Compliance Checking
+
+When a policy is evaluated against a device:
+
+- **Compliant** — Device meets the policy requirements
+- **Non-compliant** — Device violates one or more policy rules
+- **Unknown** — Cannot determine compliance (device offline or data unavailable)
+
+Non-compliant devices are flagged on the Fleet Overview dashboard and in the policy-specific views.
+
+## Policy Drift Detection
+
+SonicSaaS detects when a device's configuration drifts from its policy. This can happen when:
+
+- Someone makes a manual change on the device console
+- A firmware update changes default settings
+- An external tool modifies the configuration
+
+Drift events are logged and flagged for review. You can view drift history per device under **Devices → [device] → Drift**.
+
+## Policy History
+
+Navigate to **Policies → History** to see a chronological log of all policy changes: who changed what, when, and the before/after values.

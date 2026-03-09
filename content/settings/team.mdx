@@ -1,0 +1,44 @@
+# Team Members
+
+The team members page lets you manage who has access to your SonicSaaS instance, their roles, and their organization restrictions.
+
+## Inviting Members
+
+To add a new team member:
+
+1. Navigate to **Team Members**
+2. Enter their email address
+3. Select a role (Admin, Operator, Viewer, or Auditor)
+4. Optionally restrict them to specific organizations
+5. Send the invitation
+
+The invited user will receive an email with a link to create their account and join your team.
+
+## Managing Roles
+
+Each team member has a role that determines what they can do. See [Roles & Permissions](/security/roles-and-permissions) for the full role descriptions and permission matrix.
+
+You can change a member's role at any time — the new permissions take effect on their next request.
+
+## Organization Restrictions
+
+Non-owner members can be restricted to specific organizations. When restricted, they can only see and manage devices belonging to their assigned organizations. This is useful for:
+
+- MSP technicians who manage specific client accounts
+- Junior staff who should only access certain sites
+- Contractors with limited scope
+
+## Removing Members
+
+When you remove a team member:
+
+- Their sessions are revoked immediately
+- Their account is soft-deleted (not permanently removed, preserving audit trail)
+- They can no longer sign in
+- The removal is recorded in the audit log
+
+## Related
+
+- [Roles & Permissions](/security/roles-and-permissions) — role descriptions and permission matrix
+- [General Settings](/settings/general) — team name and organization management
+- [Audit Log](/admin/audit) — track team management actions

@@ -1,0 +1,56 @@
+# Audit Log
+
+The audit log provides an immutable record of all significant actions performed in your SonicSaaS instance. This is a core compliance control for SOC 2.
+
+## What Gets Logged
+
+Every mutation in the platform is recorded in the audit log:
+
+- **Authentication events** — sign-in, sign-out, password changes, MFA enrollment/disable
+- **Device operations** — add, edit, delete, connection tests, credential updates
+- **Fleet operations** — backups, firmware updates, configuration restores, user syncs
+- **Policy changes** — policy creation, modification, and deletion
+- **Team management** — member invitations, role changes, member removal
+- **API key operations** — creation, revocation, scope changes
+- **Integration changes** — integration configuration, sync operations
+- **Settings changes** — operational settings, schedule modifications
+
+## Audit Record Fields
+
+Each audit record captures:
+
+- **Who** — the user or API key that performed the action
+- **What** — the action type and affected resource
+- **When** — timestamp of the action
+- **Result** — whether the action succeeded or failed
+- **Permission** — which permission was used to authorize the action
+- **Changes** — before/after values for modifications (stored as structured data)
+- **Context** — IP address and other request metadata
+
+## Immutability
+
+Audit records are append-only — they cannot be modified or deleted through the application. This ensures the audit trail is tamper-resistant and suitable for compliance evidence.
+
+## Retention
+
+Audit records are retained for 13 months by default, supporting annual compliance review cycles with a one-month overlap.
+
+## Searching and Filtering
+
+You can search and filter the audit log by:
+
+- Time range
+- User or API key
+- Action type
+- Resource type
+- Result (success/failure)
+
+## SIEM Integration
+
+For centralized log management, audit events can be forwarded to [Splunk](/integrations/splunk) via the HTTP Event Collector in real time.
+
+## Related
+
+- [Security & Compliance](/security) — platform security overview
+- [Compliance Status](/security/compliance-status) — SOC 2 control mapping
+- [Splunk Integration](/integrations/splunk) — event forwarding

@@ -1,0 +1,87 @@
+# Infrastructure Security
+
+SonicSaaS runs as a Docker Compose stack on your own infrastructure. The deployment is hardened with container security, network isolation, and HTTP security headers.
+
+## Docker Security
+
+### Non-Root Execution
+
+The application container runs as a dedicated non-root user. This limits the impact of any container escape — even if an attacker gains code execution inside the container, they have minimal host privileges.
+
+### Multi-Stage Build
+
+The production Docker image is built in multiple stages. The final image contains only the compiled application — no source code, build tools, or development dependencies are included. This reduces the attack surface and image size.
+
+### Secret Exclusion
+
+The `.dockerignore` file prevents sensitive files from being included in the Docker build context:
+
+- Environment files (`.env`, `.env.local`, `.env.production`) are excluded — secrets are never baked into image layers
+- Git history, TLS certificates, test files, and documentation are excluded
+
+### Resource Limits
+
+Production containers have memory limits to prevent resource exhaustion:
+
+- PostgreSQL and the application container each have defined memory ceilings
+- Containers are configured to restart automatically on failure
+
+## Network Isolation
+
+### Production Stack
+
+In the production deployment:
+
+- **PostgreSQL is not exposed** to the host network — only the application container can reach the database via an internal Docker network
+- **Caddy reverse proxy** handles external access with automatic HTTPS (Let's Encrypt) when configured with a domain
+- **No unnecessary ports** are exposed to the host
+
+### Development Stack
+
+The development configuration exposes PostgreSQL on localhost for use with the local dev server. This is intentional for developer convenience and should not be used in production.
+
+## Security Headers
+
+All HTTP responses include security headers to protect against common web attacks:
+
+| Header | Protection |
+| --- | --- |
+| **X-Frame-Options** | Prevents clickjacking by blocking iframe embedding |
+| **X-Content-Type-Options** | Prevents MIME-type sniffing attacks |
+| **Strict-Transport-Security** | Forces HTTPS for all connections (2-year duration, preload-eligible) |
+| **Referrer-Policy** | Limits referrer information sent to external sites |
+| **Permissions-Policy** | Disables unnecessary browser APIs (camera, microphone, geolocation) |
+| **Content-Security-Policy** | Restricts which sources can load scripts, styles, images, and other resources |
+
+## TLS Configuration
+
+### Client Connections
+
+All browser-to-server communication uses HTTPS. In production, Caddy handles TLS termination with automatic certificate management via Let's Encrypt.
+
+### Firewall Connections
+
+SonicSaaS connects to managed firewalls over HTTPS. Because SonicWall firewalls commonly use self-signed TLS certificates, the platform supports these connections. The authentication layer compensates with challenge-response protocols (Digest or CHAP) that prevent credential exposure even without certificate verification.
+
+## Firewall Authentication Security
+
+When connecting to managed firewalls, SonicSaaS uses the strongest available authentication method:
+
+1. **Digest authentication** (SHA-256/SHA-512) — challenge-response, preferred
+2. **Public Key** (RSA) — password encrypted with the device's public key
+3. **CHAP** — challenge-response protocol, keeps credentials off the wire
+4. **Basic** — last resort only, with warnings logged
+
+The platform automatically negotiates the strongest method each device supports and will not downgrade on authentication failure (preventing protocol downgrade attacks).
+
+## Automatic Database Migrations
+
+The production container automatically applies database migrations on startup. It waits for PostgreSQL to be ready, applies any pending migrations, and then starts the application — ensuring the database schema is always current.
+
+## Environment Variable Security
+
+Sensitive configuration is injected via environment variables, never hardcoded:
+
+- Encryption keys, database credentials, and API secrets are all environment-based
+- The application validates required secrets at startup and fails fast if they are missing or malformed
+- Environment files are excluded from version control and Docker images

@@ -1,0 +1,51 @@
+# Fleet Backup
+
+SonicSaaS can back up device configurations across your entire fleet in a single operation. Backups are encrypted at rest and stored locally or on an external FTP server.
+
+## How Fleet Backup Works
+
+A fleet backup operation connects to each device, downloads its current configuration, encrypts the file, and stores it. The operation runs across multiple devices concurrently for efficiency.
+
+You can run a fleet backup:
+
+- **On demand** — trigger a backup of all devices or a selected subset
+- **On a schedule** — configure automatic backups at regular intervals
+- **Before operations** — the platform can automatically back up devices before firmware updates or other changes
+
+## Backup Coverage
+
+The backup overview shows your fleet's backup health at a glance:
+
+- Which devices have recent backups
+- Which devices have stale backups (older than your configured threshold)
+- Which devices have never been backed up
+- Which devices had backup failures
+
+## Backup Storage
+
+Backup files can be stored in two locations:
+
+- **Local storage** — files stored on the SonicSaaS server's filesystem
+- **FTP server** — files pushed to an external FTP server for additional redundancy
+
+All backup files are encrypted with AES-256-GCM before being written to storage. Even if the storage media is compromised, the backup contents remain protected.
+
+See [Integrations — FTP](/integrations/ftp) for FTP server configuration.
+
+## Backup History
+
+Each device maintains a history of its backups with timestamps, file sizes, and status. You can download previous backups or compare them to identify configuration changes over time.
+
+## Best Practices
+
+- **Schedule regular backups** — weekly or daily depending on how frequently your configurations change
+- **Back up before changes** — always back up before firmware updates, policy changes, or configuration restores
+- **Monitor coverage** — check the backup overview regularly for devices with stale or missing backups
+- **Test restores** — periodically verify that backups can be restored successfully
+- **Use FTP for redundancy** — store backups on an FTP server in addition to local storage
+
+## Related
+
+- [Fleet Restore](/configurations/restore) — restore configurations from backup
+- [FTP Integration](/integrations/ftp) — configure external backup storage
+- [Operations](/operations) — track backup operation progress

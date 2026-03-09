@@ -1,0 +1,63 @@
+# Encryption
+
+SonicSaaS encrypts all sensitive data at rest using industry-standard cryptography. Credentials are never stored in plaintext and are only decrypted at the moment they are needed.
+
+## What Is Encrypted
+
+| Data | Encryption | Key |
+| --- | --- | --- |
+| Device credentials (firewall admin passwords) | AES-256-GCM | `DEVICE_ENCRYPTION_KEY` |
+| Integration API keys (ITGlue, ConnectWise, etc.) | AES-256-GCM | `DEVICE_ENCRYPTION_KEY` |
+| FTP server passwords | AES-256-GCM | `DEVICE_ENCRYPTION_KEY` |
+| MFA secrets (TOTP) | AES-256-GCM | `AUTH_ENCRYPTION_KEY` |
+| Configuration backup files | AES-256-GCM | `DEVICE_ENCRYPTION_KEY` |
+| User passwords | bcrypt (one-way hash) | N/A — not reversible |
+| MFA recovery codes | SHA-256 (one-way hash) | N/A — not reversible |
+
+## How Credential Encryption Works
+
+Device credentials are encrypted using **AES-256-GCM**, a symmetric encryption algorithm that provides both confidentiality and tamper detection.
+
+1. **At storage time**: A fresh random initialization vector (IV) is generated for each credential, the credential is encrypted, and an authentication tag is produced to detect tampering
+2. **At rest**: The encrypted credential, IV, and authentication tag are stored together in the database — the plaintext credential is never saved
+3. **At use time**: When the platform needs to connect to a firewall, the credential is decrypted in server-side memory, used for the API call, and then discarded
+
+This means credentials exist in plaintext only during the brief window of an active API call to the device.
+
+## Key Management
+
+SonicSaaS uses separate encryption keys for different data classes:
+
+- **`DEVICE_ENCRYPTION_KEY`** — encrypts device credentials, integration keys, and backup files
+- **`AUTH_ENCRYPTION_KEY`** — encrypts MFA secrets (separate from device credentials for key compartmentalization)
+
+Both keys are 32-byte (256-bit) values stored as environment variables. They are never committed to source control, never logged, and never included in Docker image layers.
+
+### Generating keys
+
+Generate a secure encryption key:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+### Key security
+
+- Keys are validated at application startup — invalid keys prevent the application from starting
+- Keys exist only in your `.env` file or secrets manager — they never travel over the network
+- The encryption module is protected by a server-only import guard, preventing it from being accidentally included in client-side code
+
+## Credential Lifecycle
+
+The credential lifecycle is designed around the principle of minimum exposure:
+
+1. **User enters credentials** in the web interface (HTTPS-encrypted in transit)
+2. **Server encrypts immediately** — plaintext never touches the database
+3. **Stored encrypted** — database contains only ciphertext
+4. **Decrypted on demand** — only when connecting to a device, in server memory
+5. **Discarded after use** — no credential caching, no persistent plaintext
+6. **Never sent to the client** — database queries that return device data explicitly exclude credential columns
+
+## Backup File Encryption
+
+Configuration backup files downloaded from firewalls are encrypted before being written to disk. The encrypted format includes a header, IV, authentication tag, and ciphertext — ensuring backups at rest are protected even if the storage media is compromised.

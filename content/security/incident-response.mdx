@@ -1,0 +1,82 @@
+# Incident Response
+
+SonicSaaS maintains a documented incident response plan covering detection, containment, and recovery from security incidents. This page summarizes the key elements.
+
+## Scope
+
+The incident response plan covers:
+
+- Unauthorized access to the platform or managed firewalls
+- Credential compromise (user accounts, device credentials, API keys, encryption keys)
+- Data breach or exfiltration
+- Denial of service against the management platform
+- Supply chain compromise (dependencies, container images, CI pipeline)
+- Insider threat (unauthorized privilege escalation or data access)
+
+## Severity Classification
+
+| Severity | Definition | Response Target |
+| --- | --- | --- |
+| **P1 — Critical** | Active breach, credential exposure, or data exfiltration | Immediate (< 1 hour) |
+| **P2 — High** | Vulnerability being actively exploited | < 4 hours |
+| **P3 — Medium** | Vulnerability discovered, no evidence of exploitation | < 24 hours |
+| **P4 — Low** | Security improvement or hardening opportunity | Next planned work cycle |
+
+## Response Phases
+
+### Detection
+
+Security incidents are detected through multiple channels:
+
+- **Automated scanning**: Static analysis, dependency scanning, container scanning, and secret detection run in CI
+- **Audit trail**: All mutations are logged to an immutable audit table — anomalous patterns are visible in log review
+- **User reports**: Team members can report suspicious activity
+- **External disclosure**: Vulnerability reports from external parties
+
+### Containment
+
+Immediate containment actions depend on the incident type:
+
+- **Compromised user account**: Revoke all sessions, force password reset
+- **Compromised device credentials**: Rotate the password on the firewall, update credentials in SonicSaaS, review audit logs for unauthorized operations
+- **Compromised encryption key**: Generate a new key, re-encrypt all affected credentials
+- **Compromised auth secret**: Replace the secret — all active sessions are invalidated immediately
+- **Database compromise**: Rotate all secrets (database password, encryption keys, auth secret), force password reset for all users
+
+### Recovery
+
+1. Restore from backup if data integrity is compromised
+2. Verify system integrity
+3. Monitor audit logs closely for 48 hours post-recovery
+4. Re-enable any disabled features or integrations
+
+### Post-Incident
+
+After resolution, the team conducts:
+
+- **Timeline documentation**: Complete incident chronology from detection to resolution
+- **Root cause analysis**: What failed and why
+- **Lessons learned**: What to improve
+- **Action items**: Security improvements tracked as issues
+- **Stakeholder notification**: Affected users notified if data was exposed
+
+## Communication
+
+| Audience | When | Channel |
+| --- | --- | --- |
+| Internal team | Immediately on P1-P2 | Direct communication |
+| Affected users | Within 72 hours if data exposed | Email |
+| All users | After resolution if systemic | In-app notice or email |
+
+## Evidence Preservation
+
+For P1 and P2 incidents, the following evidence is preserved before making changes:
+
+- Audit event records for the incident time window
+- Activity logs for the same period
+- Application log files
+- Container image SHA used at time of incident
+
+## Annual Review
+
+The incident response plan is reviewed annually and after any incident. Reviews include a tabletop exercise simulating a critical scenario, verification that credential rotation procedures work, and updates based on the current threat landscape.

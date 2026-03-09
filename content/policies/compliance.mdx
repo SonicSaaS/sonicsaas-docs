@@ -1,0 +1,47 @@
+# Compliance Checking
+
+The compliance checking dashboard shows you which devices in your fleet are compliant with your defined policies and which need attention.
+
+## How Compliance Checking Works
+
+When you define policies (firmware targets, security service requirements, password rules, backup schedules), the platform continuously evaluates each device against those policies. The compliance dashboard aggregates these results across your fleet.
+
+Each device can be in one of three compliance states:
+
+- **Compliant** — the device meets all applicable policy requirements
+- **Non-compliant** — the device violates one or more policies
+- **Unknown** — the device hasn't been evaluated yet (e.g., newly added or unreachable)
+
+## What Gets Checked
+
+Compliance checking covers all active policy modules:
+
+- **Firmware** — is the device running at or above the target version?
+- **Security Services** — are required security features (IPS, antivirus, content filtering, etc.) enabled?
+- **Local Users** — are there unauthorized accounts? Is MFA enabled where required?
+- **Backups** — does the device have a recent backup within the configured threshold?
+- **Passwords** — do admin passwords meet complexity and rotation requirements?
+
+## Policy Hierarchy
+
+Policies follow a three-level hierarchy:
+
+1. **Global** — applies to all devices by default
+2. **Organization** — overrides global settings for devices in a specific organization
+3. **Device** — overrides organization settings for a specific device
+
+This lets you set a baseline and make exceptions where needed — for example, a stricter firmware target for production firewalls versus lab devices.
+
+## Taking Action
+
+When you identify non-compliant devices, the platform provides workflows to bring them into compliance:
+
+- Click through to the relevant device detail page to investigate
+- Run fleet operations (firmware updates, backup operations) to remediate in bulk
+- Review the policy history to understand when and how the device fell out of compliance
+
+## Related
+
+- [Policy Engine](/policies) — overview of the policy system
+- [Password Policies](/policies/passwords) — password-specific policy settings
+- [Policy History](/policies/history) — audit trail of policy changes

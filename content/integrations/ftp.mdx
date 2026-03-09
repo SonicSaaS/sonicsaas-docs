@@ -1,0 +1,41 @@
+# FTP Server
+
+The FTP integration allows SonicSaaS to store device configuration backups on an external FTP server and to stage firmware files for deployment.
+
+## What It Provides
+
+- **External backup storage** — push encrypted configuration backups to an FTP server for additional redundancy
+- **Firmware staging** — upload firmware images to an FTP server for device retrieval during updates
+- **Multiple servers** — configure different FTP servers for different purposes or organizations
+
+## Setup
+
+To configure an FTP server:
+
+1. Navigate to **Integrations → FTP**
+2. Enter the FTP server address, port, username, and password
+3. Specify the target directory for backups and/or firmware
+4. Test the connection
+5. Save the configuration
+
+Your FTP server password is encrypted at rest using AES-256-GCM.
+
+## Backup Storage
+
+When FTP is configured as a backup destination, device configuration backups are pushed to the FTP server after being encrypted. The files on the FTP server are already AES-256-GCM encrypted — even if the FTP server is compromised, backup contents are protected.
+
+## Firmware Staging
+
+For firmware updates, the platform can upload firmware images to the FTP server. SonicWall Gen 6 devices can then retrieve the firmware via FTP, which is useful for environments where direct upload isn't practical.
+
+The platform uses a semaphore to limit concurrent FTP operations, preventing FTP server overload during fleet-wide operations.
+
+## Network Considerations
+
+FTP connections use plaintext FTP (not FTPS). This is acceptable for LAN-only FTP servers serving Gen 6 appliances. Ensure your FTP server is on the same network as the managed devices.
+
+## Related
+
+- [Fleet Backup](/configurations/backup) — backup operations
+- [Firmware Scheduling](/firmware/scheduling) — firmware update management
+- [Integrations Overview](/integrations) — all available integrations

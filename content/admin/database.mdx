@@ -1,0 +1,27 @@
+# Database
+
+The database admin page provides visibility into the PostgreSQL database that powers your SonicSaaS instance.
+
+## What You Can See
+
+- **Schema information** — tables, columns, and relationships
+- **Migration status** — which database migrations have been applied
+- **Database health** — connection status and basic diagnostics
+
+## Database Migrations
+
+SonicSaaS uses database migrations to manage schema changes. Migrations are applied automatically when the application starts. The database page shows which migrations have been applied and their timestamps.
+
+## Self-Hosted Management
+
+Since SonicSaaS is self-hosted, you have full control over your PostgreSQL database:
+
+- **Backups** — configure automated backups (see [Backup & Recovery](/security/backup-and-recovery))
+- **Access** — the database is on an internal Docker network, not exposed externally in production
+- **Monitoring** — use standard PostgreSQL monitoring tools alongside SonicSaaS
+
+## Related
+
+- [Backup & Recovery](/security/backup-and-recovery) — database backup procedures
+- [Infrastructure Security](/security/infrastructure) — network isolation
+- [Administration](/admin) — admin overview

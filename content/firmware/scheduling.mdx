@@ -1,0 +1,50 @@
+# Update Scheduling
+
+SonicSaaS supports scheduled firmware updates with staged rollout, delivery group routing, and automatic pre-update backups.
+
+## How Scheduling Works
+
+Rather than updating all devices at once, you can schedule firmware updates to run during maintenance windows with controlled batch sizes:
+
+1. **Select devices** — choose which devices to include in the update
+2. **Set a maintenance window** — define when updates should begin
+3. **Configure staging** — optionally stage firmware to devices before the update window
+4. **Enable pre-update backup** — the platform can automatically back up each device's configuration before applying the firmware update
+
+## Delivery Groups
+
+Delivery groups let you organize devices into update tiers. For example:
+
+- **Pilot group** — a small set of non-critical devices that receive updates first
+- **Standard group** — the bulk of your fleet, updated after the pilot group is verified
+- **Critical group** — high-availability or mission-critical devices, updated last
+
+This staged approach reduces risk by catching issues early before they affect your entire fleet.
+
+## Pre-Update Backups
+
+When enabled, the platform automatically creates a configuration backup before each firmware update. If an update causes issues, you can restore the device to its pre-update configuration from the [Configurations](/configurations) page.
+
+## Firmware Staging
+
+For environments with limited bandwidth or strict maintenance windows, firmware can be staged (uploaded to devices) ahead of the actual update. This separates the download step from the reboot step, allowing you to:
+
+- Pre-position firmware during business hours
+- Apply the update (reboot) during the maintenance window
+- Reduce the overall maintenance window duration
+
+## Notifications
+
+The platform can send notifications at key points in the update process:
+
+- When an update is scheduled
+- When devices begin updating
+- When all devices have completed (or if any failures occur)
+
+See [Integrations — Email](/integrations/email) for notification configuration.
+
+## Related
+
+- [Firmware Targets](/firmware/targets) — define version requirements
+- [Firmware Audit](/firmware) — review fleet firmware status
+- [Configurations](/configurations) — manage device backups

@@ -1,0 +1,72 @@
+# Adding Your First Device
+
+SonicSaaS manages SonicWall firewalls by connecting to their management API. To add a device, you need its management IP address (or hostname), port, and administrator credentials.
+
+## Add a Single Device
+
+1. Navigate to **Devices** in the sidebar
+2. Click **Add Device** in the top right
+3. Fill in the form:
+   - **Device Name** — A friendly name (e.g., "HQ-TZ670" or "Branch-Office-NSa2700")
+   - **Host / IP Address** — The management IP or DNS hostname (e.g., `10.0.0.1` or `fw.example.com`)
+   - **Port** — Management API port (default: `443`)
+   - **Username** — Administrator username (e.g., `admin`)
+   - **Password** — Administrator password
+4. Click **Add Device**
+
+SonicSaaS will immediately test the connection and report the device status.
+
+## Bulk Import
+
+For large fleets, you can import devices from a CSV file:
+
+1. Navigate to **Devices** in the sidebar
+2. Click **Import**
+3. Upload a CSV file with columns: `name`, `host`, `port`, `username`, `password`
+4. Review the import preview
+5. Confirm the import
+
+All credentials are encrypted immediately upon import — they are never stored in plaintext.
+
+## What Happens After Adding a Device
+
+Once a device is added:
+
+1. **Connection test** — SonicSaaS connects to the device API and reports the status (Accessible, AuthFailed, Timeout, etc.)
+2. **Device discovery** — If the connection succeeds, SonicSaaS polls the device for its model, serial number, firmware version, license status, and configuration
+3. **Fleet dashboard** — The device appears on the [Fleet Overview](/getting-started) with health metrics
+4. **Scheduled polling** — Depending on your [schedule configuration](/settings/schedules), the device will be polled periodically to keep status current
+
+## Credential Security
+
+- Credentials are encrypted at rest using **AES-256-GCM**
+- The encryption key (`DEVICE_ENCRYPTION_KEY`) is a 32-byte hex secret stored in your environment
+- Credentials are decrypted only at request time on the server — never sent to the browser
+- Credential access is logged in the audit trail
+
+## Troubleshooting
+
+### AuthFailed
+
+The username or password is incorrect, or the user account has been removed from the device. Go to the device settings and update the credentials.
+
+### Unreachable
+
+The device IP/hostname cannot be reached from the SonicSaaS server. Verify:
+- The IP address is correct
+- The SonicSaaS server can reach the device network
+- No firewall rules are blocking the connection
+
+### PortClosed
+
+The management port (usually 443) is not responding. Verify:
+- The management API is enabled on the SonicWall
+- The correct port is configured
+- No ACLs are blocking the management port
+
+### Timeout
+
+The device is reachable but not responding within the timeout window. This may indicate:
+- High network latency
+- The device is under heavy load
+- A VPN tunnel or routing issue between SonicSaaS and the device

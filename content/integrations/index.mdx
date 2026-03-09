@@ -1,0 +1,91 @@
+# Integrations
+
+SonicSaaS connects to external services to extend fleet management capabilities. Integrations are configured per team and can be enabled or disabled independently.
+
+## Available Integrations
+
+### Infrastructure
+
+| Integration | Purpose | Status |
+| --- | --- | --- |
+| **FTP Server** | Store configuration backups on external FTP | Available |
+| **Email (SMTP)** | Send notification emails (alerts, invitations) | Available |
+
+### SonicWall Cloud
+
+| Integration | Purpose | Status |
+| --- | --- | --- |
+| **MySonicWall** | Sync licenses, firmware availability, device metadata, support entitlements | Available |
+
+### Documentation
+
+| Integration | Purpose | Status |
+| --- | --- | --- |
+| **ITGlue** | Sync device documentation, manage assets, push trait data | Available |
+| **Hudu** | Alternative documentation platform | Planned |
+
+### Monitoring
+
+| Integration | Purpose | Status |
+| --- | --- | --- |
+| **Splunk** | Forward audit logs via HTTP Event Collector (HEC) | Available |
+| **Huntress** | Forward audit events via HEC | Available |
+| **Syslog / SIEM Export** | Generic syslog forwarding | Planned |
+| **Webhooks** | Custom HTTP callbacks for events | Planned |
+
+### PSA & Ticketing
+
+| Integration | Purpose | Status |
+| --- | --- | --- |
+| **ConnectWise PSA** | Sync devices, create tickets, asset management | Available |
+| **Datto Autotask** | PSA integration | Planned |
+| **Halo PSA** | PSA integration | Planned |
+
+## Configuring an Integration
+
+1. Navigate to **Integrations** in the sidebar
+2. Click the integration you want to configure
+3. Enter the required credentials or connection details
+4. Test the connection
+5. Save and enable
+
+Each integration has its own configuration page with specific fields and instructions.
+
+## Integration Health
+
+Active integrations show health status:
+
+- **Active** — Connected and working normally
+- **Warning** — Connected but experiencing issues (e.g., sync delays)
+- **Error** — Connection failed or authentication expired
+
+Health is checked periodically and displayed on the Integrations hub.
+
+## Key Integrations
+
+### MySonicWall
+
+The MySonicWall integration syncs cloud data for your registered devices:
+- **Firmware availability** — Latest firmware versions per device model
+- **License status** — Expiration dates, support entitlements
+- **Device metadata** — Registration details, warranty status
+
+This data powers the [Firmware Audit](/firmware) compliance checks.
+
+### ITGlue
+
+The ITGlue integration keeps your documentation in sync:
+- **Pull** — Import organizations, configurations, and assets from ITGlue
+- **Push** — Write device traits and status data back to ITGlue after each poll
+- **Sync** — Bidirectional sync on a configurable schedule
+
+### FTP Server
+
+Configure an FTP server to store configuration backups externally:
+- Multiple FTP servers supported
+- Automatic upload after each backup operation
+- Organized by device name and timestamp
+
+## Security
+
+Integration credentials (API keys, passwords, tokens) are encrypted at rest using AES-256-GCM — the same encryption used for device credentials. They are only decrypted at request time on the server.

@@ -1,0 +1,81 @@
+# Compliance Status
+
+SonicSaaS tracks security controls across multiple compliance frameworks. This page provides a high-level view of our compliance posture.
+
+## SOC 2 Type II
+
+SOC 2 is our primary compliance target. As a platform managing firewall credentials and fleet operations, SOC 2 Type II validates that our security controls operate effectively over time.
+
+### Trust Services Criteria Summary
+
+| Category | Description | Controls | Status |
+| --- | --- | --- | --- |
+| **Security (CC6-CC9)** | Access control, encryption, change management | 41 | 36 implemented, 5 planned |
+| **Availability (A1)** | Uptime, disaster recovery, redundancy | 3 | All implemented |
+| **Processing Integrity (PI1)** | Input validation, data accuracy | 4 | All implemented |
+| **Confidentiality (C1)** | Data protection in transit | 2 | 1 implemented, 1 partial |
+| **Privacy (P1/P3)** | Privacy policy, data export | 2 | 1 implemented, 1 planned |
+
+**Overall**: 45 of 52 SOC 2-scoped controls are implemented. No critical gaps.
+
+### Key Control Areas
+
+**Access Control (CC6)** — Fully implemented:
+
+- User authentication with database sessions, MFA, and SSO
+- Team-scoped data isolation on every query
+- Role-based access control with 5 roles and granular permissions
+- AES-256-GCM encryption for credentials at rest
+- Rate limiting on all authentication endpoints
+- SSRF protection and security headers
+
+**Monitoring & Logging (CC7)** — Implemented:
+
+- Structured JSON logging with redaction
+- Immutable audit trail for all mutations
+- Incident response plan documented and maintained
+- Log retention policy defined
+
+**Change Management (CC8)** — Implemented:
+
+- CI pipeline enforces lint, type checking, and tests on every change
+- Pre-commit hooks run lint and formatting
+- Dependency vulnerability scanning (npm audit, Dependabot)
+- Security testing: SAST (Semgrep), DAST (OWASP ZAP), container scanning (Trivy), secret detection (Gitleaks)
+
+**Availability (A1)** — Implemented:
+
+- Container hardening with health checks and auto-restart
+- Network isolation (database not exposed externally)
+- Disaster recovery plan with defined RTO/RPO targets
+
+### Planned Controls
+
+The following controls are planned for implementation:
+
+- **Key rotation** — versioned encryption key management for credential re-encryption
+- **Periodic access reviews** — automated quarterly review process
+- **Anomaly detection** — automated alerting for suspicious activity patterns
+- **Vendor risk assessment** — formal third-party risk evaluation process
+- **Data export/deletion** — self-service data export and account deletion
+
+## Additional Frameworks
+
+SonicSaaS maps controls across these supplementary frameworks:
+
+| Framework | Coverage | Notes |
+| --- | --- | --- |
+| **OWASP Top 10** | All categories addressed | Injection, auth, XSS, SSRF, CSRF — all mitigated |
+| **NIST CSF 1.1** | Mapped across all 5 functions | Identify, Protect, Detect, Respond, Recover |
+| **ISO 27001** | Key controls mapped | Access control, cryptography, operations security |
+| **CIS Controls v8** | Core controls mapped | Data protection, account management, audit logging |
+| **PCI DSS v4** | Supplementary coverage | Payment processing delegated to Stripe |
+
+## Self-Hosted Compliance Advantages
+
+Because SonicSaaS is self-hosted:
+
+- **Data sovereignty**: All data stays on your infrastructure
+- **Audit scope**: Your SOC 2 audit scope is limited to your own deployment
+- **Control ownership**: You control encryption keys, network access, and backup procedures
+- **No shared infrastructure**: No multi-tenant risk — your instance is yours alone

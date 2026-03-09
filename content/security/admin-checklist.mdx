@@ -1,0 +1,91 @@
+# Admin Security Checklist
+
+Use this checklist to harden your SonicSaaS deployment. These steps cover the security controls that require configuration on your part.
+
+## Before Going Live
+
+### Encryption Keys
+
+- [ ] Generate a unique `DEVICE_ENCRYPTION_KEY` (32-byte hex) — do not reuse across environments
+- [ ] Generate a unique `AUTH_SECRET` (32-byte hex)
+- [ ] Generate a unique `AUTH_ENCRYPTION_KEY` (32-byte hex) if using MFA
+- [ ] Store a backup of all keys in a secure offline location (encrypted USB, password manager vault)
+- [ ] Verify keys are not committed to version control
+
+### Database
+
+- [ ] Set a strong `POSTGRES_PASSWORD` (not the default development password)
+- [ ] Verify PostgreSQL is not exposed to the host network in production (internal Docker network only)
+- [ ] Set up automated hourly database backups with rotation
+- [ ] Test a backup restore to verify the procedure works
+
+### TLS & Network
+
+- [ ] Configure a domain name and let Caddy obtain a TLS certificate automatically
+- [ ] Verify HTTPS is working and HTTP redirects to HTTPS
+- [ ] Ensure the platform is only accessible from your internal network or via VPN
+
+### Authentication
+
+- [ ] Create your admin account and set a strong password
+- [ ] Enable MFA on all admin and owner accounts
+- [ ] Save MFA recovery codes in a secure location
+- [ ] Configure SSO (Microsoft Entra ID) if your organization uses it
+
+## Ongoing Operations
+
+### Access Control
+
+- [ ] Review team member list quarterly — remove inactive accounts
+- [ ] Verify role assignments match current responsibilities
+- [ ] Check organization restrictions for members who should have limited access
+- [ ] Review API keys — revoke any that are unused or expired
+
+### Monitoring
+
+- [ ] Review audit logs periodically for unexpected actions
+- [ ] Monitor failed sign-in attempts for potential credential stuffing
+- [ ] Check device connection status for unexpected authentication failures
+- [ ] Review integration health for connectivity issues
+
+### Maintenance
+
+- [ ] Keep the platform updated to the latest version
+- [ ] Review and apply dependency security updates
+- [ ] Rotate encryption keys periodically (requires re-encryption of stored credentials)
+- [ ] Test disaster recovery procedures annually
+- [ ] Review and update the incident response plan annually
+
+### Backup Verification
+
+- [ ] Verify automated backups are running and producing valid dumps
+- [ ] Confirm backup retention meets your requirements
+- [ ] Test a restore from backup at least annually
+- [ ] Verify encryption key backups are current and accessible
+
+## Environment File Security
+
+Your `.env` file contains all secrets for your deployment. Protect it carefully:
+
+- Never commit it to version control
+- Never include it in Docker images
+- Restrict file permissions to the deployment user only
+- Store a backup copy separately from your database backups
+- When rotating keys, update the backup copy immediately
+
+## Container Security
+
+- Verify the application runs as a non-root user (default configuration)
+- Check that memory limits are set on all containers
+- Ensure containers are configured to restart on failure
+- Keep the base Docker image updated for security patches
+
+## What to Do If Something Goes Wrong
+
+If you suspect a security incident:
+
+1. **Don't panic** — follow the [Incident Response](/security/incident-response) procedures
+2. **Preserve evidence** — export audit logs before making changes
+3. **Contain the threat** — revoke compromised sessions or credentials
+4. **Recover** — restore from backup if needed, following the [Backup & Recovery](/security/backup-and-recovery) procedures
+5. **Review** — conduct a post-incident review and update your security controls

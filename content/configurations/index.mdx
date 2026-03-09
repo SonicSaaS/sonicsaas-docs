@@ -1,0 +1,52 @@
+# Configurations
+
+The Configuration page manages backup coverage across your fleet and provides tools for bulk restore operations.
+
+## Backup Coverage
+
+The backup coverage card shows how many devices have current configuration backups:
+
+| Status | Meaning | Action |
+| --- | --- | --- |
+| **Covered** | A current backup exists matching the device's firmware version | No action needed |
+| **Stale** | A backup exists but was taken on an older firmware version | Re-run backup to capture current config |
+| **No Backup** | No configuration backup has been taken | Run a backup immediately |
+| **Failed** | The last backup attempt failed | Check device connectivity and retry |
+| **v6** | SonicWall Gen 6 device (backup not supported via API) | Manual backup required |
+
+## Running a Fleet Backup
+
+Click **Fleet Backup** to back up all eligible devices in your fleet. This creates a new operation that:
+
+1. Connects to each device
+2. Exports the full configuration
+3. Encrypts and stores the backup
+4. Reports success/failure per device
+
+You can track progress on the [Operations](/operations) page.
+
+## Backup Storage
+
+Configuration backups are stored encrypted on the SonicSaaS server. Each device retains up to 50 backups (configurable). Older backups are automatically cleaned up by the retention policy.
+
+Backup storage location is configurable:
+- **Local filesystem** (default for self-hosted)
+- **FTP server** (when [FTP integration](/integrations/ftp) is configured)
+
+## Fleet Restore
+
+The restore card provides tools to restore devices to a previous configuration:
+
+1. Navigate to **Configuration → Fleet Restore**
+2. Select the devices to restore
+3. Choose a backup snapshot for each device
+4. Confirm the restore operation
+
+Each device will be restored to its selected configuration and rebooted. The operation is tracked with full audit logging.
+
+## Best Practices
+
+- **Backup before firmware updates** — Always ensure a current backup exists before upgrading firmware. The firmware scheduler can do this automatically.
+- **Regular backup schedule** — Configure automated backups via [Schedules](/settings/schedules) to maintain coverage.
+- **Test restores** — Periodically verify that backups can be successfully restored.
+- **Monitor coverage** — Use the Fleet Overview dashboard to track backup coverage trends.

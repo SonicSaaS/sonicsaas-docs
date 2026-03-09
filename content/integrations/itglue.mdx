@@ -1,0 +1,43 @@
+# ITGlue
+
+The ITGlue integration synchronizes device documentation between SonicSaaS and your ITGlue instance. This keeps your documentation platform up to date with the latest device configurations, network details, and compliance data.
+
+## What It Provides
+
+- **Pull sync** — import device and organization data from ITGlue into SonicSaaS
+- **Push sync** — write device documentation, configuration details, and compliance data back to ITGlue
+- **Bidirectional sync** — keep both platforms in sync with scheduled synchronization
+
+## Setup
+
+To configure the ITGlue integration:
+
+1. Navigate to **Integrations → ITGlue**
+2. Enter your ITGlue API key (generated from ITGlue's admin panel)
+3. Configure sync direction (pull, push, or bidirectional)
+4. Map ITGlue organizations to SonicSaaS organizations
+5. Save and run an initial sync
+
+Your ITGlue API key is encrypted at rest using AES-256-GCM.
+
+## What Gets Synced
+
+### From ITGlue to SonicSaaS (Pull)
+
+- Organization names and metadata
+- Device records (for discovery and import)
+
+### From SonicSaaS to ITGlue (Push)
+
+- Device documentation (model, serial, firmware, configuration details)
+- Network information (interfaces, IP addresses, VPN tunnels)
+- Compliance and security status
+
+## Sync Schedule
+
+Synchronization can be run on demand or on an automated schedule. The platform tracks sync status and alerts you to any failures.
+
+## Related
+
+- [Integrations Overview](/integrations) — all available integrations
+- [Devices](/devices) — fleet management

@@ -1,0 +1,37 @@
+# Email (SMTP)
+
+The email integration configures SMTP for sending notifications and alerts from SonicSaaS.
+
+## What It Provides
+
+- **Operation notifications** — receive emails when fleet operations complete or fail
+- **Alert notifications** — get notified about security events, device status changes, and compliance issues
+- **Password reset emails** — enables the password reset flow for user accounts
+
+## Setup
+
+To configure email:
+
+1. Navigate to **Integrations → Email**
+2. Enter your SMTP server details (host, port, encryption method)
+3. Enter the sender email address and authentication credentials
+4. Send a test email to verify the configuration
+5. Save
+
+SMTP credentials are encrypted at rest using AES-256-GCM.
+
+## Notification Types
+
+Once email is configured, you can receive notifications for:
+
+- **Firmware updates** — when scheduled updates complete or fail
+- **Backup operations** — when fleet backups complete or encounter issues
+- **Device status changes** — when devices become unreachable or recover
+- **Security alerts** — authentication failures, unauthorized accounts detected
+
+Notification preferences can be configured in [Settings](/settings/general).
+
+## Related
+
+- [Settings](/settings/general) — notification preferences
+- [Integrations Overview](/integrations) — all available integrations

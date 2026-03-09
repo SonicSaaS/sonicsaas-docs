@@ -1,0 +1,44 @@
+# Firmware
+
+The Firmware Audit page compares every device in your fleet against your defined firmware targets. It highlights which devices are current, which have updates available, and which are below minimum thresholds.
+
+## Audit Table
+
+Each row shows:
+
+| Column | Description |
+| --- | --- |
+| **Device** | Device name |
+| **Current Version** | Firmware version currently running |
+| **Minimum Version** | Your policy minimum for this device model |
+| **Latest Available** | Newest firmware available (via MySonicWall sync) |
+| **Status** | Compliance status badge |
+
+## Firmware Status
+
+| Status | Meaning | Action |
+| --- | --- | --- |
+| **Current** | Firmware meets or exceeds the target version | No action needed |
+| **Update Available** | A newer version exists but current version is still acceptable | Schedule update at your convenience |
+| **Below Minimum** | Current firmware is below the minimum policy threshold | Update urgently — device is non-compliant |
+| **No Target Defined** | No firmware target has been set for this device model | Set a target in Firmware Targets |
+| **Error** | Cannot determine firmware status | Check device connectivity |
+
+## Managing Firmware Targets
+
+Click **Manage Targets** to define minimum and target firmware versions per device model. This drives the compliance audit:
+
+- **Minimum version** — Devices below this version are flagged as **Below Minimum** (critical)
+- **Target version** — The preferred version for updates. Devices below this but above minimum show **Update Available**
+
+## Scheduling Updates
+
+Click **Update Settings** to configure how firmware updates are rolled out:
+
+- **Schedule windows** — Define maintenance windows for firmware updates
+- **Staged rollout** — Update devices in batches to limit blast radius
+- **Pre-update backup** — Automatically back up device config before firmware update
+
+## MySonicWall Sync
+
+Firmware availability data comes from the [MySonicWall integration](/integrations/mysonicwall). When configured, SonicSaaS periodically syncs the latest available firmware versions for each device model so the audit table always reflects current options.

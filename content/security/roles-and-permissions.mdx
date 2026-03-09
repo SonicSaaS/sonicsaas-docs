@@ -1,0 +1,56 @@
+# Roles & Permissions
+
+SonicSaaS uses role-based access control (RBAC) to ensure team members can only access what they need. Every action in the platform — from viewing devices to executing operations — is governed by permissions.
+
+## Roles
+
+SonicSaaS provides five built-in roles, each designed for a specific responsibility:
+
+| Role | Purpose | Key capabilities |
+| --- | --- | --- |
+| **Owner** | Full platform control | Unrestricted access to all features, team management, and billing |
+| **Admin** | Day-to-day management | Full access to devices, operations, integrations, and team settings |
+| **Operator** | Operational work | Can view and operate devices, run operations, manage firmware and backups |
+| **Viewer** | Read-only access | Can view devices, dashboards, and reports — cannot make changes |
+| **Auditor** | Compliance oversight | Can view audit logs, compliance data, and security settings |
+
+## How Permissions Work
+
+Permissions are defined as **action:resource** pairs. When a team member tries to perform an action, the system checks whether their role includes the required permission.
+
+**Actions** describe what you can do:
+
+- **View** — read data
+- **Create** — add new items
+- **Edit** — modify existing items
+- **Delete** — remove items
+- **Execute** — run operations (firmware updates, backups, polls)
+- **Manage** — configure system-level settings (team, integrations, API keys)
+
+**Resources** describe what you're acting on — devices, firmware, backups, policies, integrations, team settings, audit logs, and more.
+
+## Permission Enforcement
+
+Permissions are enforced at the service layer — not just in the UI. Even if a button is hidden in the interface, the server-side action will reject unauthorized requests. This means:
+
+- Removing a button from the UI does not bypass authorization
+- API requests are subject to the same permission checks as the web interface
+- API keys can be scoped to specific permission sets
+
+## Organization Restrictions
+
+In addition to roles, team members can be restricted to specific organizations within a team. When a member has organization restrictions:
+
+- They can only see devices belonging to their assigned organizations
+- All queries are automatically filtered to their allowed organizations
+- Owners are always unrestricted
+
+This is useful for MSPs where different technicians manage different client organizations.
+
+## Team Isolation
+
+Every piece of data in SonicSaaS is scoped to a team. There is no way for one team to access another team's devices, credentials, or audit logs. Team isolation is enforced at the database query level — every query includes a team filter as a mandatory condition.
+
+## Managing Roles
+
+Team owners and admins can manage roles from the team settings page. When changing a member's role, the new permissions take effect on their next request. You can also view the full permission matrix to understand exactly what each role can and cannot do.

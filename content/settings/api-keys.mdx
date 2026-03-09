@@ -1,0 +1,45 @@
+# API Keys
+
+API keys allow you to access SonicSaaS programmatically via the REST API for automation, integration, and scripting.
+
+## Creating API Keys
+
+To create an API key:
+
+1. Navigate to **Settings → API Keys**
+2. Give the key a descriptive name (e.g., "Monitoring Script" or "Backup Automation")
+3. Select the permission scopes the key should have
+4. Optionally set an expiration date
+5. Optionally configure an IP allowlist (CIDR notation)
+6. Create the key and copy it immediately — it won't be shown again
+
+## Permission Scoping
+
+API keys have their own permission scopes, independent of the user who created them. You should follow the principle of least privilege — give each key only the permissions it needs.
+
+Available scopes follow the same action:resource model as [roles](/security/roles-and-permissions), so you can grant read-only access, operation execution, or full management capabilities.
+
+## Security Features
+
+- **Hashed storage** — API keys are SHA-256 hashed before storage. The plaintext key is only shown once at creation time.
+- **IP allowlist** — restrict which IP addresses can use the key (CIDR notation supported)
+- **Expiration** — set an expiration date to enforce key rotation
+- **Last used tracking** — see when each key was last used
+- **Audit trail** — all API key usage is logged in the audit trail
+
+## Rate Limiting
+
+API routes are rate-limited separately from the web interface:
+
+- Read operations: higher limits for monitoring and reporting
+- Write operations: moderate limits
+- Fleet operations: lower limits to prevent accidental mass operations
+
+## Managing Keys
+
+You can view, revoke, or regenerate API keys from the settings page. Revoking a key takes effect immediately — any in-flight requests using the key will fail.
+
+## Related
+
+- [Roles & Permissions](/security/roles-and-permissions) — permission model
+- [Security Overview](/security) — platform security

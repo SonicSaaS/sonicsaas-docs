@@ -1,0 +1,37 @@
+# User Sync
+
+User sync automates the process of pulling local user account data from your managed firewalls into SonicSaaS for compliance monitoring.
+
+## How Sync Works
+
+On a configurable schedule, SonicSaaS connects to each device and retrieves the current list of local user accounts, their group memberships, and MFA status. This data is stored and compared against your approved user list and policy requirements.
+
+## Sync Schedule
+
+You can configure how often user sync runs. More frequent syncs catch unauthorized changes faster but increase load on your devices. Common intervals:
+
+- **Hourly** — for high-security environments
+- **Every few hours** — balanced approach for most environments
+- **Daily** — suitable for stable environments with infrequent changes
+
+## What Gets Synced
+
+- Local user account names and properties
+- Group memberships and role assignments
+- MFA enrollment status
+- Account creation and modification timestamps (when available)
+
+## Monitoring Sync Health
+
+The sync page shows:
+
+- When the last sync ran and its outcome
+- How many devices were successfully synced
+- Any devices that failed to sync (unreachable, auth failure, etc.)
+
+## Related
+
+- [Local Users Overview](/local-users) — fleet-wide user visibility
+- [Managed Users](/local-users/managed) — actively managed accounts
+- [Approved Users](/local-users/approved) — authorized account list
+- [Schedules](/settings/schedules) — configure sync intervals

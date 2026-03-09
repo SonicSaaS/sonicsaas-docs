@@ -1,0 +1,36 @@
+# Splunk
+
+The Splunk integration sends SonicSaaS events to your Splunk instance via the HTTP Event Collector (HEC) for centralized log management and SIEM correlation.
+
+## What It Provides
+
+- **Event forwarding** — send audit events, device status changes, and operational alerts to Splunk
+- **SIEM integration** — correlate SonicSaaS events with other security data in your Splunk environment
+- **Compliance evidence** — maintain a centralized, tamper-evident log store for audit purposes
+
+## Setup
+
+To configure the Splunk integration:
+
+1. Navigate to **Integrations → Splunk**
+2. Enter your Splunk HEC endpoint URL and token
+3. Configure which event types to forward
+4. Save and test the connection
+
+Your Splunk HEC token is encrypted at rest using AES-256-GCM.
+
+## What Gets Sent
+
+Events forwarded to Splunk include:
+
+- Authentication events (sign-in, sign-out, MFA, password changes)
+- Device operations (backups, firmware updates, configuration changes)
+- Policy changes and compliance status changes
+- Alert and anomaly events
+
+Events are sent in structured JSON format, ready for Splunk indexing and search.
+
+## Related
+
+- [Audit Log](/admin/audit) — platform audit trail
+- [Integrations Overview](/integrations) — all available integrations

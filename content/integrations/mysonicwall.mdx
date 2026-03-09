@@ -1,0 +1,37 @@
+# MySonicWall
+
+The MySonicWall integration connects SonicSaaS to the MySonicWall cloud portal to pull firmware availability, license status, and device metadata.
+
+## What It Provides
+
+- **Firmware availability** — know which firmware versions are available for each device model, without manually checking MySonicWall
+- **License status** — see license expiration dates, support tier, and warranty information
+- **Device metadata** — serial numbers, registration status, and product details synced from the cloud portal
+
+## Setup
+
+To configure the MySonicWall integration:
+
+1. Navigate to **Integrations → MySonicWall**
+2. Enter your MySonicWall portal credentials
+3. If your account uses two-factor authentication, you'll be prompted for a TOTP code during initial sync
+4. Save the configuration and run an initial sync
+
+Your MySonicWall credentials are encrypted at rest using the same AES-256-GCM encryption as device credentials.
+
+## How Sync Works
+
+After initial setup, the platform periodically syncs with MySonicWall to keep firmware availability and license data current. The sync pulls data from the portal — it does not make changes to your MySonicWall account.
+
+## Authentication Security
+
+- Portal credentials are encrypted before storage and decrypted only during sync operations
+- Two-factor authentication is supported (TOTP codes used once and discarded)
+- RSA-encrypted password transmission to the MySonicWall API (credentials never sent in plaintext)
+- Bearer tokens from TFA are short-lived and not persisted
+
+## Related
+
+- [Firmware Targets](/firmware/targets) — set target versions using availability data
+- [Firmware Audit](/firmware) — compare fleet versions against targets
+- [Licensing](/licensing) — fleet-wide license overview

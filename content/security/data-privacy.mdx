@@ -1,0 +1,59 @@
+# Data Privacy & Isolation
+
+SonicSaaS enforces strict data isolation and input validation to prevent unauthorized data access, cross-tenant data leakage, and injection attacks.
+
+## Team Data Isolation
+
+Every piece of data in SonicSaaS — devices, credentials, backups, audit logs, policies — is scoped to a team. This isolation is enforced at the database query level:
+
+- Every query includes a mandatory team filter
+- Every update and delete operation re-verifies team ownership in the WHERE clause (defense-in-depth)
+- There is no administrative "super-tenant" view that can access other teams' data
+
+This means even if a bug exists in application logic, the database layer prevents cross-team data access.
+
+## Organization-Level Filtering
+
+Within a team, data can be further segmented by organization. Team members can be restricted to specific organizations, limiting their visibility to only the devices and data belonging to their assigned clients.
+
+## Credential Exposure Prevention
+
+Device credentials are protected from accidental exposure through multiple layers:
+
+- **Column projection**: Database queries that return device data to the client explicitly exclude credential columns — encrypted credentials are never included in API responses or rendered pages
+- **Server-only guards**: The encryption module cannot be imported into client-side code — the build system will reject any attempt to do so
+- **No credential caching**: Credentials are decrypted on-demand and discarded after use — no in-memory credential store
+- **Sanitized error responses**: Server action error responses never include password or credential fields
+
+## Input Validation
+
+All user input is validated before processing using schema validation:
+
+- **Form submissions**: Every server action that writes data validates its inputs against a strict schema (data types, formats, and length limits)
+- **String length caps**: Input strings are capped to match database column constraints, preventing oversized payloads
+- **Query limits**: Any parameter that controls result size is clamped server-side to prevent resource exhaustion
+
+## SSRF Protection
+
+When you add a device by hostname or IP address, the platform validates the address to prevent Server-Side Request Forgery (SSRF):
+
+- Private and reserved IP ranges are blocked (loopback, RFC 1918, link-local, CGNAT)
+- IPv6 private ranges and IPv4-mapped IPv6 addresses are detected and blocked
+- Localhost and localhost-equivalent hostnames are rejected
+- Validation occurs both at input time and again at connection time, protecting against addresses that enter the system through import or sync paths
+
+## SQL Injection Prevention
+
+All database queries use an ORM query builder that produces parameterized statements. There are no raw SQL strings with user-controlled interpolation anywhere in the codebase.
+
+## XSS Prevention
+
+The React framework automatically escapes all rendered content, preventing script injection. No unsafe HTML rendering methods are used in the application. Content Security Policy headers provide additional defense-in-depth.
+
+## Log Sanitization
+
+Application logs are sanitized to prevent credential leakage:
+
+- Credentials, passwords, and encryption keys are never logged
+- Email addresses, IP addresses, and encrypted credential fields are redacted from log output
+- Error objects from cryptographic operations are logged as message strings only, not full objects (which could contain key material)

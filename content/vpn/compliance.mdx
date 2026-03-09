@@ -1,0 +1,31 @@
+# VPN Compliance
+
+The VPN compliance page evaluates your VPN tunnel configurations against security best practices and identifies tunnels that need attention.
+
+## What Gets Checked
+
+VPN compliance evaluates tunnels across several security dimensions:
+
+- **Encryption strength** — are tunnels using strong encryption algorithms?
+- **Perfect forward secrecy** — is PFS enabled to protect past sessions if keys are compromised?
+- **Key exchange** — are tunnels using secure key exchange methods?
+- **Certificate status** — are certificates approaching expiration?
+- **Configuration consistency** — are similar tunnels configured the same way?
+
+## Compliance Status
+
+Each tunnel receives a compliance status based on the evaluation:
+
+- **Compliant** — meets all security requirements
+- **Non-compliant** — one or more security concerns identified
+- **Warning** — configuration is acceptable but could be improved
+
+## Taking Action
+
+For non-compliant tunnels, the platform identifies what needs to change. You can click through to the device to update the tunnel configuration, or use the policy engine to enforce encryption standards across your fleet.
+
+## Related
+
+- [IPSec Tunnels](/vpn/ipsec) — tunnel inventory and status
+- [SSL-VPN](/vpn/ssl-vpn) — remote access portals
+- [Security Services](/security-services) — device security feature status

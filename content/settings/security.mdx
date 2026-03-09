@@ -1,0 +1,42 @@
+# Account Security
+
+The account security page lets you manage your personal security settings — password and multi-factor authentication.
+
+## Password Management
+
+You can change your password from this page. Password requirements include:
+
+- Minimum length requirement
+- Character class diversity (uppercase, lowercase, digits, special characters)
+- Optional breach database checking (HIBP)
+
+After changing your password, all your other sessions are automatically revoked — you'll need to sign in again on other devices.
+
+## MFA (Multi-Factor Authentication)
+
+### Enabling MFA
+
+1. Click **Enable MFA** from the account security page
+2. Scan the QR code with your authenticator app (Google Authenticator, Authy, 1Password, etc.)
+3. Enter a verification code to confirm setup
+4. **Save your recovery codes** — these are your backup if you lose access to your authenticator app
+
+### Disabling MFA
+
+To disable MFA, you must enter a current TOTP code from your authenticator app. This verifies you still have access before removing the protection. Disabling MFA revokes all other active sessions.
+
+### Recovery Codes
+
+If you lose access to your authenticator app:
+
+1. Use one of your 8 recovery codes to sign in
+2. Each recovery code can only be used once
+3. After signing in, consider re-enrolling MFA with a new authenticator setup
+
+Recovery codes are hashed before storage — they cannot be retrieved after initial display. Keep them in a secure location.
+
+## Related
+
+- [Authentication & MFA](/security/authentication) — how authentication works
+- [Roles & Permissions](/security/roles-and-permissions) — access control
+- [Admin Security Checklist](/security/admin-checklist) — deployment hardening

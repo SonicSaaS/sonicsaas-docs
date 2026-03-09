@@ -1,0 +1,33 @@
+# Fleet Restore
+
+SonicSaaS can restore device configurations from backup across multiple devices in a single operation. This is useful for disaster recovery, rolling back changes, or replicating a known-good configuration.
+
+## How Fleet Restore Works
+
+A restore operation selects a backup for each device and pushes the configuration back to the firewall. The platform handles the entire workflow:
+
+1. **Select devices** to restore
+2. **Choose the backup** — pick a specific backup by date, or restore the most recent backup
+3. **Review** the restore plan before applying
+4. **Execute** — the platform restores each device and tracks progress
+
+Restore operations are fully audited — the audit log records who initiated the restore, which devices were affected, and the outcome for each device.
+
+## When to Use Restore
+
+- **After a failed change** — roll back a configuration that caused issues
+- **Disaster recovery** — restore a device that was reset to factory defaults
+- **Configuration cloning** — apply a known-good configuration to replacement hardware
+- **Compliance remediation** — revert unauthorized configuration changes detected by drift monitoring
+
+## Safety Measures
+
+- Each restore is preceded by a fresh backup of the device's current configuration (so you can always undo the restore)
+- The operation tracks per-device status so you can see which devices succeeded and which need attention
+- Failed restores do not affect other devices in the same operation
+
+## Related
+
+- [Fleet Backup](/configurations/backup) — create configuration backups
+- [Device Detail — Drift](/devices/device-detail) — detect configuration changes
+- [Operations](/operations) — track restore operation progress
