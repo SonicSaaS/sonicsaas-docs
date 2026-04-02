@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Manrope, JetBrains_Mono } from 'next/font/google';
-import { Footer, Layout, Navbar } from 'nextra-theme-docs';
+import { Footer, Layout, Navbar, ThemeSwitch } from 'nextra-theme-docs';
 import { Head } from 'nextra/components';
 import { getPageMap } from 'nextra/page-map';
 import { Shield } from 'lucide-react';
@@ -28,14 +28,17 @@ export const metadata: Metadata = {
 const navbar = (
   <Navbar
     logo={
-      <a href="https://sonicsaas.com" className="flex items-center !no-underline">
-        <Shield className="h-6 w-6 text-[var(--brand)]" />
+      <a href="https://sonicsaas.com" className="inline-flex items-center !no-underline">
+        <Shield className="h-6 w-6 shrink-0 text-[var(--brand)]" />
         <span className="ml-2 text-xl font-semibold">SonicSaaS</span>
       </a>
     }
     logoLink={false}
+    className="!pl-4"
     projectLink="https://github.com/SonicSaaS/sonicsaas-docs"
-  />
+  >
+    <ThemeSwitch lite />
+  </Navbar>
 );
 
 const footer = (
