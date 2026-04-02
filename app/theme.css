@@ -1,0 +1,10 @@
+/*
+  Master palette — shared neutrals + brand across all SonicSaaS sites.
+  Canonical source: sonicsaas.com/palette.css (marketing site public/).
+
+  Note: Nextra controls primary hue/saturation/lightness and background via
+  <Head> props in layout.tsx. This import provides the shared CSS custom
+  properties (--brand, --border, --card, etc.) for any custom components
+  used in doc pages.
+*/
+@import url("https://sonicsaas.com/palette.css");

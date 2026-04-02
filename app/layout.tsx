@@ -5,6 +5,7 @@ import { getPageMap } from 'nextra/page-map';
 import type { ReactNode } from 'react';
 import 'nextra-theme-docs/style.css';
 import './print.css';
+import './theme.css';
 import { ThemeSync } from '../components/theme-sync';
 
 export const metadata: Metadata = {
@@ -42,7 +43,17 @@ export default async function RootLayout({
 }) {
   return (
     <html lang="en" dir="ltr" suppressHydrationWarning>
-      <Head />
+      <Head
+        color={{
+          hue: { light: 24, dark: 24 },
+          saturation: { light: 94, dark: 90 },
+          lightness: { light: 50, dark: 55 },
+        }}
+        backgroundColor={{
+          light: 'rgb(255,255,255)',
+          dark: 'rgb(10,10,10)',
+        }}
+      />
       <body>
         <Layout
           navbar={navbar}
