@@ -3,6 +3,7 @@ import { Manrope, JetBrains_Mono } from 'next/font/google';
 import { Footer, Layout, Navbar } from 'nextra-theme-docs';
 import { Head } from 'nextra/components';
 import { getPageMap } from 'nextra/page-map';
+import { Shield } from 'lucide-react';
 import type { ReactNode } from 'react';
 import 'nextra-theme-docs/style.css';
 import './print.css';
@@ -26,7 +27,13 @@ export const metadata: Metadata = {
 
 const navbar = (
   <Navbar
-    logo={<span className="font-bold">SonicSaaS Docs</span>}
+    logo={
+      <a href="https://sonicsaas.com" className="flex items-center !no-underline">
+        <Shield className="h-6 w-6 text-[hsl(var(--nextra-primary-hue)_var(--nextra-primary-saturation)_45%)]" />
+        <span className="ml-2 text-lg font-semibold">SonicSaaS</span>
+      </a>
+    }
+    logoLink={false}
     projectLink="https://github.com/SonicSaaS/sonicsaas-docs"
   />
 );
@@ -68,6 +75,10 @@ export default async function RootLayout({
           pageMap={await getPageMap()}
           docsRepositoryBase="https://github.com/SonicSaaS/sonicsaas-docs/tree/master"
           editLink="Edit this page on GitHub"
+          sidebar={{
+            defaultMenuCollapseLevel: 1,
+            autoCollapse: true,
+          }}
         >
           <ThemeSync />
           {children}
