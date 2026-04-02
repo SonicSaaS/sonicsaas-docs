@@ -4,6 +4,8 @@ import { Head } from 'nextra/components';
 import { getPageMap } from 'nextra/page-map';
 import type { ReactNode } from 'react';
 import 'nextra-theme-docs/style.css';
+import './print.css';
+import { ThemeSync } from '../components/theme-sync';
 
 export const metadata: Metadata = {
   title: {
@@ -17,7 +19,7 @@ export const metadata: Metadata = {
 const navbar = (
   <Navbar
     logo={<span className="font-bold">SonicSaaS Docs</span>}
-    projectLink="https://github.com/christaylorcodes/SonicSaaS"
+    projectLink="https://github.com/SonicSaaS/sonicsaas-docs"
   />
 );
 
@@ -46,9 +48,10 @@ export default async function RootLayout({
           navbar={navbar}
           footer={footer}
           pageMap={await getPageMap()}
-          docsRepositoryBase="https://github.com/christaylorcodes/sonicsaas-docs/tree/main"
+          docsRepositoryBase="https://github.com/SonicSaaS/sonicsaas-docs/tree/master"
           editLink="Edit this page on GitHub"
         >
+          <ThemeSync />
           {children}
         </Layout>
       </body>
