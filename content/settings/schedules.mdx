@@ -1,33 +1,114 @@
 # Schedules
 
-The schedules page lets you configure automated recurring tasks — device polling, backup operations, user sync, and integration sync.
+The schedules page lets you configure automated recurring tasks for device data collection, WAN monitoring, and integration sync.
 
-## Schedule Types
+## SonicWall Data Collection
 
-| Schedule | Purpose |
-| --- | --- |
-| **Device polling** | How often the platform checks each device's status and pulls configuration data |
-| **Fleet backup** | Automated configuration backups on a recurring schedule |
-| **User sync** | Automated local user account synchronization |
-| **Integration sync** | Scheduled sync with ITGlue, MySonicWall, and other integrations |
+SonicWall data collection is organized into two schedules that work together to balance freshness and efficiency.
+
+### Device Metrics (Lightweight)
+
+Collects time-series and status data without pulling configuration or triggering backups:
+
+- **Health metrics** — CPU, memory, connection counts
+- **Interface bandwidth** — per-interface throughput counters
+- **VPN tunnel status** — tunnel up/down state, detects state changes
+- **HA status** — high-availability peer health and mode
+
+**Default interval**: 15 minutes (minimum 5 minutes)
+
+This schedule connects to each device, authenticates, collects only lightweight data, and disconnects. No configuration audit, backup, or documentation is performed — keeping connections fast and low-impact.
+
+### Device Config (Full Poll)
+
+Collects everything the metrics schedule does, plus heavy configuration data:
+
+- **All metrics data** listed above
+- **Security services audit** — license status, signature versions, service health
+- **Local user accounts** — user list and role assignments
+- **Device documentation** — full configuration snapshot stored for change detection
+- **Configuration backup** — exports saved to backup storage
+
+**Default interval**: 4 hours (minimum 15 minutes)
+
+#### Smart Poll
+
+The Device Config schedule uses **smart poll** to avoid redundant heavy work. Before pulling configuration data, it checks whether the device has actually changed:
+
+- **Firmware version** — has it been upgraded since last poll?
+- **Uptime** — has the device rebooted (uptime reset)?
+- **Last full poll** — has it been more than 24 hours since the last config audit?
+
+If none of these conditions are met, heavy phases (config audit, backup, documentation) are **skipped** — but metrics are **always collected**. This means the Device Config schedule acts like a metrics poll most of the time, only doing heavy work when something has changed or enough time has passed.
+
+> **Backups and documentation only happen when a change is detected** (or 24+ hours since last audit). You don't need to worry about unnecessary backup operations on every poll cycle.
+
+### How They Work Together
+
+When the Device Config schedule runs and collects metrics, it updates freshness timestamps so the Device Metrics schedule knows not to re-poll the same device redundantly. The two schedules coordinate automatically:
+
+| Data Type | Device Metrics | Device Config |
+| --- | --- | --- |
+| Health metrics | Yes | Yes |
+| Interface bandwidth | Yes | Yes |
+| VPN tunnel status | Yes | Yes |
+| HA status | Yes | Yes |
+| Security audit | — | When changed |
+| Local users | — | When changed |
+| Documentation | — | When changed |
+| Backup | — | When changed |
+
+## WAN Monitoring
+
+### WAN Probe
+
+Sends ICMP probes to WAN gateway IPs to measure network quality:
+
+- **Latency** — round-trip time to each gateway
+- **Jitter** — latency variation
+- **Packet loss** — percentage of dropped probes
+
+**Default interval**: 5 minutes
+
+WAN probes run independently of device polls — they don't require SonicWall authentication or API access.
+
+## Integration Schedules
+
+### ITGlue Sync
+
+Synchronizes device documentation with ITGlue flexible assets. Pushes configuration data collected by Device Config polls to your ITGlue organization.
+
+**Default interval**: 4 hours
+
+## System Schedules
+
+### Credential Rotation Check
+
+Monitors device credential age and flags credentials that should be rotated based on your security policy.
+
+### Evidence Snapshot
+
+Generates compliance evidence snapshots for SOC 2 audit trails.
 
 ## Configuration
 
-Each schedule type can be configured with:
+Each schedule can be configured with:
 
-- **Interval** — how often the task runs
-- **Scope** — which devices or integrations are included
-- **Timing** — when the task runs (to avoid peak hours)
+- **Enabled/Disabled** — toggle the schedule on or off
+- **Interval** — how often the task runs (constrained by minimum intervals)
+- **Run Now** — trigger an immediate execution outside the normal schedule
 
 ## Best Practices
 
-- **Stagger schedules** — avoid running all automated tasks at the same time
-- **Match polling to needs** — more frequent polling for critical devices, less frequent for stable ones
-- **Schedule backups during off-hours** — reduce impact on device performance
-- **Monitor schedule health** — check for failed runs and adjust intervals if needed
+- **Start with defaults** — the default intervals are tuned for most environments
+- **Device Metrics at 15 min** is a good balance for VPN and health monitoring
+- **Device Config at 4 hours** catches configuration drift without excessive load
+- **Stagger schedules** — avoid running all tasks at the same time
+- **Monitor schedule health** — check for failed runs in the schedule cards
 
 ## Related
 
-- [Operational Settings](/settings/operational-settings) — configure timeouts and concurrency
-- [Fleet Backup](/configurations/backup) — backup operations
-- [User Sync](/local-users/sync) — user synchronization
+- [Operational Settings](/settings/operational-settings) — configure timeouts, concurrency, and cooldown thresholds
+- [Fleet Backup](/configurations/backup) — backup operations and storage
+- [WAN Monitoring](/wan) — ISP health and latency dashboards
+- [VPN Monitoring](/vpn) — tunnel status and event history

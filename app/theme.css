@@ -1,10 +1,72 @@
 /*
-  Master palette — shared neutrals + brand across all SonicSaaS sites.
-  Canonical source: sonicsaas.com/palette.css (marketing site public/).
+  SonicSaaS palette — inlined from the canonical source:
+  sonicsaas (marketing repo) → site/public/palette.css
 
-  Note: Nextra controls primary hue/saturation/lightness and background via
-  <Head> props in layout.tsx. This import provides the shared CSS custom
+  Nextra controls primary hue/saturation/lightness and background via
+  <Head> props in layout.tsx. This file provides the shared CSS custom
   properties (--brand, --border, --card, etc.) for any custom components
   used in doc pages.
 */
-@import url("https://sonicsaas.com/palette.css");
+
+/* ── Light theme ─────────────────────────────────────────────────────── */
+:root {
+  /* Neutrals */
+  --background: hsl(0 0% 100%);
+  --foreground: hsl(240 10% 3.9%);
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(240 10% 3.9%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(240 10% 3.9%);
+  --primary: hsl(240 5.9% 10%);
+  --primary-foreground: hsl(0 0% 98%);
+  --secondary: hsl(240 4.8% 95.9%);
+  --secondary-foreground: hsl(240 5.9% 10%);
+  --muted: hsl(240 4.8% 95.9%);
+  --muted-foreground: hsl(240 3.8% 46.1%);
+  --accent: hsl(240 4.8% 95.9%);
+  --accent-foreground: hsl(240 5.9% 10%);
+  --destructive: hsl(0 84.2% 60.2%);
+  --destructive-foreground: hsl(0 0% 98%);
+  --border: hsl(240 5.9% 90%);
+  --input: hsl(240 5.9% 90%);
+  --ring: hsl(240 10% 3.9%);
+
+  /* Brand */
+  --brand: hsl(24 94% 50%);
+  --brand-foreground: hsl(0 0% 100%);
+  --brand-muted: hsl(24 80% 95%);
+  --brand-hover: hsl(24 94% 42%);
+
+  /* Shared geometry */
+  --radius: 0.6rem;
+}
+
+/* ── Dark theme ──────────────────────────────────────────────────────── */
+.dark {
+  /* Neutrals */
+  --background: hsl(240 10% 3.9%);
+  --foreground: hsl(0 0% 98%);
+  --card: hsl(240 10% 3.9%);
+  --card-foreground: hsl(0 0% 98%);
+  --popover: hsl(240 10% 3.9%);
+  --popover-foreground: hsl(0 0% 98%);
+  --primary: hsl(0 0% 98%);
+  --primary-foreground: hsl(240 5.9% 10%);
+  --secondary: hsl(240 3.7% 15.9%);
+  --secondary-foreground: hsl(0 0% 98%);
+  --muted: hsl(240 3.7% 15.9%);
+  --muted-foreground: hsl(240 5% 64.9%);
+  --accent: hsl(240 3.7% 15.9%);
+  --accent-foreground: hsl(0 0% 98%);
+  --destructive: hsl(0 62.8% 30.6%);
+  --destructive-foreground: hsl(0 0% 98%);
+  --border: hsl(240 3.7% 15.9%);
+  --input: hsl(240 3.7% 15.9%);
+  --ring: hsl(240 4.9% 83.9%);
+
+  /* Brand */
+  --brand: hsl(24 90% 55%);
+  --brand-foreground: hsl(0 0% 100%);
+  --brand-muted: hsl(24 60% 15%);
+  --brand-hover: hsl(24 94% 58%);
+}

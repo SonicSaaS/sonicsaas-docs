@@ -5,6 +5,7 @@ export default {
   connectwise: 'ConnectWise PSA',
   'connectwise-migration': 'ConnectWise Migration',
   huntress: 'Huntress',
+  'entra-id': 'Microsoft Entra ID',
   splunk: 'Splunk',
   ftp: 'FTP Server',
   email: 'Email (SMTP)',

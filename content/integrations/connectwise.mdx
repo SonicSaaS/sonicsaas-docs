@@ -1,38 +1,111 @@
-# ConnectWise PSA
+# ConnectWise PSA Integration
 
-The ConnectWise PSA integration connects SonicSaaS to your ConnectWise Manage instance for client mapping and operational workflows.
+Connect SonicSaaS to your ConnectWise Manage instance for company sync, location management, and automated service tickets.
 
-## What It Provides
+## Prerequisites
 
-- **Client mapping** — link SonicSaaS organizations to ConnectWise companies
-- **Ticket integration** — create and track service tickets for device issues
-- **Asset sync** — keep ConnectWise configuration records updated with device data
+- Administrator access to ConnectWise Manage
+- Administrator or Owner access to SonicSaaS
+- Your ConnectWise Manage domain name and company ID
 
-## Setup
+## Step 1: Create a Security Role
 
-To configure the ConnectWise integration:
+We recommend creating a dedicated security role for the SonicSaaS integration rather than using an existing role. This ensures the integration has exactly the permissions it needs.
 
-1. Navigate to **Integrations → ConnectWise**
-2. Enter your ConnectWise PSA URL and API credentials (public key + private key)
-3. Map ConnectWise companies to SonicSaaS organizations
-4. Configure which data flows between the platforms
-5. Save and test the connection
+1. In ConnectWise Manage, go to **System > Security Roles**
+2. Click the **+** button to create a new role
+3. Name it **SonicSaaS Integration**
+4. Configure the role with the following permissions:
 
-Your ConnectWise API credentials are encrypted at rest using AES-256-GCM.
+> **Warning:** Not using the specified security permissions may prevent SonicSaaS from syncing companies, creating tickets, or accessing agreement data.
 
-## Client Mapping
+| Module | Area | Add | Edit | Delete | Inquire | Description |
+|---|---|---|---|---|---|---|
+| **Companies** | Company Maintenance | None | All | None | All | Syncs company data and updates address/contact fields |
+| **Companies** | Configurations | None | None | None | All | Reads configuration records for future asset management |
+| **Companies** | Contacts | None | None | None | All | Reads contact data for future contact sync |
+| **Finance** | Agreements | None | All | None | All | Scans agreements and manages product additions during migration |
+| **Finance** | Invoices | None | None | None | All | Reads invoice data for future billing dashboards |
+| **Procurement** | Product Catalog | None | None | None | All | Looks up products for agreement mapping |
+| **Service Desk** | Service Tickets | All | All | None | All | Creates and updates tickets from device alerts |
+| **System** | Member Maintenance | None | None | None | All | Reads member data for ticket assignment |
+| **System** | Table Setup | None | None | None | All | Reads board, status, type, and priority reference data |
 
-The key value of the ConnectWise integration is linking your SonicSaaS organizations to ConnectWise companies. This enables:
+> We strongly recommend setting **Inquire** to **All** across all modules. Using a restricted inquire level may result in incomplete company syncing — SonicSaaS will only see companies visible at that level.
 
-- Automatic organization context when creating tickets
-- Client-aware reporting and documentation
-- Streamlined workflows between your PSA and firewall management
+5. Click **Save**
 
-## Migration Tool
+## Step 2: Create an API Member
 
-If you're transitioning from standalone organization management to ConnectWise-based client management, see the [ConnectWise Migration](/integrations/connectwise-migration) tool.
+1. Go to **System > Members > API Members**
+2. Click the **+** button to create a new API member
+3. Fill in the **Profile** section:
+   - **Member ID** — e.g., `SonicSaaSAPI`
+   - **Member Name** — e.g., `SonicSaaS Integration`
+4. Fill in the **System** section:
+   - **Role ID** — select the **SonicSaaS Integration** role from Step 1
+   - **Level** — select the highest level (e.g., Corporate) to ensure full company visibility
+   - **Location** — your primary location
+   - **Business Unit** — your primary business unit
+   - **Default Territory** — your default territory
+
+> **Important:** The Level, Location, Business Unit, and Default Territory should be set to the highest available values. Companies and configurations synced from ConnectWise inherit these settings from the API member. Restricting them may cause incomplete syncing.
+
+5. Click **Save**
+6. Confirm the API member is **Active**. An inactive member will invalidate any API keys associated with it.
+
+## Step 3: Generate API Keys
+
+1. On the API member you just created, select the **API Keys** tab
+2. Click the **+** icon to generate a new key pair
+3. Enter a description (e.g., `SonicSaaS Integration`) and click **Save**
+4. Copy both the **Public Key** and **Private Key**
+
+> **Important:** The Private Key is only displayed once — at the time the key is created. Store it in a secure location immediately. There is no way to recover the Private Key after you close this screen. If you lose it, you must generate a new key pair.
+
+> **Note:** API keys cannot be regenerated. If you need to replace keys (e.g., lost private key, compromised credentials), you must create a new key pair and update the credentials in SonicSaaS.
+
+## Step 4: Connect SonicSaaS
+
+1. In SonicSaaS, navigate to **Integrations > ConnectWise**
+2. Select your **Server Region**:
+   - **North America** — na.myconnectwise.net
+   - **Europe** — eu.myconnectwise.net
+   - **Australia** — au.myconnectwise.net
+   - **Custom / Self-Hosted** — enter your server URL
+3. Enter your **Company ID** — the identifier you use at the ConnectWise login screen
+4. Enter the **Public Key** and **Private Key** from Step 3
+5. Click **Test Connection** — a successful test displays your ConnectWise version number
+6. Click **Save**
+
+> If the connection test fails, verify that the API member is active, the keys are correct, and the security role has at minimum **System > Table Setup: Inquire All** (used for connection validation).
+
+## Step 5: Configure Company Sync
+
+After saving credentials, set up company synchronization:
+
+1. (Optional) Filter by **company type** to only sync specific types (e.g., "Client")
+2. (Optional) Exclude companies by **status** (e.g., "Inactive", "Defunct")
+3. Click **Sync Now** to run the initial company import
+4. Review matched and unmatched companies
+
+SonicSaaS matches ConnectWise companies to your existing organizations by name. Unmatched companies are reported so you can review them.
+
+## What the Integration Provides
+
+- **Company sync** — match ConnectWise companies to SonicSaaS organizations, with type and status filtering
+- **Location sync** — keep site and address data synchronized between platforms
+- **Ticket creation** — automatically create ConnectWise service tickets from device alerts, with deduplication
+- **Agreement scanning** — view agreements and product mappings for migration planning
+
+## Security
+
+- API credentials are encrypted at rest using AES-256-GCM
+- Private keys are decrypted only at request time on the server — never sent to the browser
+- All ConnectWise API calls use HTTPS (HTTP is rejected)
+- Private and internal hostnames are blocked (SSRF protection)
+- All configuration changes are recorded in the audit log
 
 ## Related
 
-- [ConnectWise Migration](/integrations/connectwise-migration) — migration from standalone to ConnectWise-based management
 - [Integrations Overview](/integrations) — all available integrations

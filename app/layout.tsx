@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Manrope, JetBrains_Mono } from 'next/font/google';
 import { Footer, Layout, Navbar } from 'nextra-theme-docs';
 import { Head } from 'nextra/components';
 import { getPageMap } from 'nextra/page-map';
@@ -7,6 +8,12 @@ import 'nextra-theme-docs/style.css';
 import './print.css';
 import './theme.css';
 import { ThemeSync } from '../components/theme-sync';
+
+const manrope = Manrope({ subsets: ['latin'] });
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+});
 
 export const metadata: Metadata = {
   title: {
@@ -42,7 +49,7 @@ export default async function RootLayout({
   children: ReactNode;
 }) {
   return (
-    <html lang="en" dir="ltr" suppressHydrationWarning>
+    <html lang="en" dir="ltr" suppressHydrationWarning className={`${manrope.className} ${jetbrainsMono.variable}`}>
       <Head
         color={{
           hue: { light: 24, dark: 24 },
