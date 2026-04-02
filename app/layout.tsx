@@ -29,8 +29,8 @@ const navbar = (
   <Navbar
     logo={
       <a href="https://sonicsaas.com" className="flex items-center !no-underline">
-        <Shield className="h-6 w-6 text-[hsl(var(--nextra-primary-hue)_var(--nextra-primary-saturation)_45%)]" />
-        <span className="ml-2 text-lg font-semibold">SonicSaaS</span>
+        <Shield className="h-6 w-6 text-[var(--brand)]" />
+        <span className="ml-2 text-xl font-semibold">SonicSaaS</span>
       </a>
     }
     logoLink={false}
