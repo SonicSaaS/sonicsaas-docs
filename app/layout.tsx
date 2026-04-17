@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Manrope, JetBrains_Mono } from 'next/font/google';
-import { Footer, Layout, Navbar, ThemeSwitch } from 'nextra-theme-docs';
+import { Layout, Navbar, ThemeSwitch } from 'nextra-theme-docs';
 import { Head } from 'nextra/components';
 import { getPageMap } from 'nextra/page-map';
 import { Shield } from 'lucide-react';
@@ -9,6 +9,7 @@ import 'nextra-theme-docs/style.css';
 import './print.css';
 import './theme.css';
 import { ThemeSync } from '../components/theme-sync';
+import { SiteFooter } from '../components/footer';
 
 const manrope = Manrope({ subsets: ['latin'] });
 const jetbrainsMono = JetBrains_Mono({
@@ -41,17 +42,7 @@ const navbar = (
   </Navbar>
 );
 
-const footer = (
-  <Footer>
-    <span>
-      {new Date().getFullYear()} © SonicSaaS. Built with{' '}
-      <a href="https://nextra.site" target="_blank" rel="noopener noreferrer">
-        Nextra
-      </a>
-      .
-    </span>
-  </Footer>
-);
+const footer = <SiteFooter />;
 
 export default async function RootLayout({
   children,
