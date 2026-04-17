@@ -14,14 +14,14 @@ Use this checklist to harden your SonicSaaS deployment. These steps cover the se
 
 ### Database
 
-- [ ] Set a strong `POSTGRES_PASSWORD` (not the default development password)
-- [ ] Verify PostgreSQL is not exposed to the host network in production (internal Docker network only)
+- [ ] Set a strong database password (not the default development password)
+- [ ] Verify the database is not exposed to the host network in production (internal network only)
 - [ ] Set up automated hourly database backups with rotation
 - [ ] Test a backup restore to verify the procedure works
 
 ### TLS & Network
 
-- [ ] Configure a domain name and let Caddy obtain a TLS certificate automatically
+- [ ] Configure a domain name so the reverse proxy can obtain a TLS certificate automatically
 - [ ] Verify HTTPS is working and HTTP redirects to HTTPS
 - [ ] Ensure the platform is only accessible from your internal network or via VPN
 
@@ -68,7 +68,7 @@ Use this checklist to harden your SonicSaaS deployment. These steps cover the se
 Your `.env` file contains all secrets for your deployment. Protect it carefully:
 
 - Never commit it to version control
-- Never include it in Docker images
+- Never include it in container images
 - Restrict file permissions to the deployment user only
 - Store a backup copy separately from your database backups
 - When rotating keys, update the backup copy immediately
@@ -78,7 +78,7 @@ Your `.env` file contains all secrets for your deployment. Protect it carefully:
 - Verify the application runs as a non-root user (default configuration)
 - Check that memory limits are set on all containers
 - Ensure containers are configured to restart on failure
-- Keep the base Docker image updated for security patches
+- Keep the base container image updated for security patches
 
 ## What to Do If Something Goes Wrong
 

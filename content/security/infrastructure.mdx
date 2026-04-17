@@ -1,44 +1,28 @@
 # Infrastructure Security
 
-SonicSaaS runs as a Docker Compose stack on your own infrastructure. The deployment is hardened with container security, network isolation, and HTTP security headers.
+SonicSaaS runs as a container stack on your own infrastructure. The deployment is hardened with container security, network isolation, and HTTP security headers.
 
-## Docker Security
+## Container Security
 
 ### Non-Root Execution
 
 The application container runs as a dedicated non-root user. This limits the impact of any container escape — even if an attacker gains code execution inside the container, they have minimal host privileges.
 
-### Multi-Stage Build
+### Hardened Images
 
-The production Docker image is built in multiple stages. The final image contains only the compiled application — no source code, build tools, or development dependencies are included. This reduces the attack surface and image size.
-
-### Secret Exclusion
-
-The `.dockerignore` file prevents sensitive files from being included in the Docker build context:
-
-- Environment files (`.env`, `.env.local`, `.env.production`) are excluded — secrets are never baked into image layers
-- Git history, TLS certificates, test files, and documentation are excluded
+Production images are minimized to the compiled application only — build tools, source code, and development dependencies are excluded to reduce attack surface. Secrets are never baked into image layers; they are injected at runtime via environment variables.
 
 ### Resource Limits
 
-Production containers have memory limits to prevent resource exhaustion:
-
-- PostgreSQL and the application container each have defined memory ceilings
-- Containers are configured to restart automatically on failure
+Production containers have memory limits and are configured to restart automatically on failure, preventing resource exhaustion and improving availability.
 
 ## Network Isolation
 
-### Production Stack
-
 In the production deployment:
 
-- **PostgreSQL is not exposed** to the host network — only the application container can reach the database via an internal Docker network
-- **Caddy reverse proxy** handles external access with automatic HTTPS (Let's Encrypt) when configured with a domain
-- **No unnecessary ports** are exposed to the host
-
-### Development Stack
-
-The development configuration exposes PostgreSQL on localhost for use with the local dev server. This is intentional for developer convenience and should not be used in production.
+- The database is **not exposed** to the host network — only the application container can reach it over an internal network
+- A reverse proxy handles external access with automatic HTTPS (TLS termination and certificate management) when a domain is configured
+- Only the ports required for user access are exposed to the host
 
 ## Security Headers
 
@@ -57,7 +41,7 @@ All HTTP responses include security headers to protect against common web attack
 
 ### Client Connections
 
-All browser-to-server communication uses HTTPS. In production, Caddy handles TLS termination with automatic certificate management via Let's Encrypt.
+All browser-to-server communication uses HTTPS. In production, the reverse proxy handles TLS termination with automatic certificate management.
 
 ### Firewall Connections
 
@@ -76,7 +60,7 @@ The platform automatically negotiates the strongest method each device supports 
 
 ## Automatic Database Migrations
 
-The production container automatically applies database migrations on startup. It waits for PostgreSQL to be ready, applies any pending migrations, and then starts the application — ensuring the database schema is always current.
+The production container automatically applies pending database migrations on startup, ensuring the schema is always current before the application begins serving requests.
 
 ## Environment Variable Security
 
@@ -84,4 +68,4 @@ Sensitive configuration is injected via environment variables, never hardcoded:
 
 - Encryption keys, database credentials, and API secrets are all environment-based
 - The application validates required secrets at startup and fails fast if they are missing or malformed
-- Environment files are excluded from version control and Docker images
+- Environment files are excluded from version control and from container images

@@ -31,7 +31,7 @@ SonicSaaS uses separate encryption keys for different data classes:
 - **`DEVICE_ENCRYPTION_KEY`** — encrypts device credentials, integration keys, and backup files
 - **`AUTH_ENCRYPTION_KEY`** — encrypts MFA secrets (separate from device credentials for key compartmentalization)
 
-Both keys are 32-byte (256-bit) values stored as environment variables. They are never committed to source control, never logged, and never included in Docker image layers.
+Both keys are 32-byte (256-bit) values stored as environment variables. They are never committed to source control, never logged, and never included in container images.
 
 ### Generating keys
 

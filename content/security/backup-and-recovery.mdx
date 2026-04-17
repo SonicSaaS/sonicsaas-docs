@@ -10,15 +10,15 @@ SonicSaaS provides a documented disaster recovery plan with defined recovery obj
 | **RPO** (Recovery Point Objective) | 1 hour | Maximum data loss window (with hourly backups configured) |
 | **MTTR** (Mean Time to Repair) | 2 hours | Expected recovery time when backups are available and tested |
 
-These targets apply to the self-hosted deployment model using Docker Compose.
+These targets apply to the self-hosted deployment model.
 
 ## What Needs Backing Up
 
 ### Database
 
-The PostgreSQL database contains all application data — devices, users, audit logs, policies, and configuration. This is the most critical component to back up.
+The database contains all application data — devices, users, audit logs, policies, and configuration. This is the most critical component to back up.
 
-We recommend automated hourly database backups using `pg_dump`, with a 30-day retention period. The backup script should verify that dumps are non-empty and rotate old backups automatically.
+We recommend automated hourly database backups with a 30-day retention period. The backup process should verify that dumps are non-empty and rotate old backups automatically. Use the standard backup tooling for your database engine.
 
 ### Encryption Keys
 
@@ -51,8 +51,8 @@ If the database is corrupted or lost:
 
 If the entire host needs to be rebuilt:
 
-1. Set up Docker and Docker Compose on the new host
-2. Deploy the application
+1. Prepare the new host with the required container runtime
+2. Deploy the application stack
 3. Restore your environment file from secure backup
 4. Start the stack and restore the database from backup
 5. Restore configuration backup files
@@ -60,7 +60,7 @@ If the entire host needs to be rebuilt:
 
 ### Application Recovery (Container Crash)
 
-Application containers are configured to restart automatically on failure. If a container fails persistently, rebuild it from the image. The application is stateless — all state lives in PostgreSQL.
+Application containers are configured to restart automatically on failure. If a container fails persistently, rebuild it from the image. The application is stateless — all state lives in the database.
 
 ### Accidental Data Deletion
 
