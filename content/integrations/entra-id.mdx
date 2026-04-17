@@ -1,82 +1,131 @@
 # Microsoft Entra ID
 
-The Entra ID integration enables single sign-on (SSO) and automatic user provisioning via Microsoft Entra ID (formerly Azure AD). Users sign in with their Microsoft 365 account and are automatically assigned roles based on Entra group membership.
+The Entra ID integration enables single sign-on (SSO) and automatic user provisioning via Microsoft Entra ID (formerly Azure AD). Users sign in with their Microsoft 365 account and are automatically assigned roles based on Entra security group membership.
 
 ## What It Provides
 
 - **Single sign-on** — users authenticate with their Microsoft 365 credentials
 - **Auto-provisioning** — new users are created automatically on first SSO login
 - **Group-based roles** — Entra security groups map to SonicSaaS roles (owner, admin, operator, viewer, auditor)
-- **Auth mode control** — choose hybrid (SSO + password), entra-only (SSO required), or local-only (SSO disabled)
+- **Auth mode control** — platform-wide choice of hybrid (SSO + password), entra-only (SSO required), or local-only (SSO disabled)
+
+## How It Works
+
+SonicSaaS uses a **single multi-tenant Azure app registration** that the platform administrator configures once. Each MSP team then registers their own Azure tenant ID in SonicSaaS. When a user signs in, their home tenant is checked against the registered tenants — if it matches one, the user is routed to that team; if not, sign-in is blocked. This means you do **not** create a separate Azure app per team — you only need to register your tenant ID in SonicSaaS and grant admin consent.
 
 ## Prerequisites
 
-- An Azure AD / Entra ID tenant with admin access
+- Azure AD / Entra ID tenant with admin access
 - SonicSaaS accessible via HTTPS (required for OAuth redirect)
+- Platform administrator access (for Part 1) — typically the SonicSaaS admin who runs the deployment
 
-## Azure App Registration
+---
 
-### 1. Register an Application
+## Part 1: Platform Setup (one-time, by SonicSaaS admin)
+
+This is done **once** for the entire SonicSaaS deployment. Skip to [Part 2](#part-2-team-setup) if your platform admin has already completed this.
+
+### 1.1 Register a Multi-Tenant Azure App
 
 1. Go to **Azure Portal** &rarr; **Microsoft Entra ID** &rarr; **App registrations**
 2. Click **New registration**
 3. Configure:
    - **Name**: `SonicSaaS`
-   - **Supported account types**: "Accounts in this organizational directory only"
-   - **Redirect URI**: Web &mdash; `https://<your-domain>/api/auth/callback/microsoft-entra-id`
+   - **Supported account types**: **Accounts in any organizational directory (Any Microsoft Entra ID tenant — Multitenant)**
+   - **Redirect URI**: Web &mdash; `https://<your-sonicsaas-domain>/api/auth/callback/microsoft-entra-id`
 4. Click **Register**
-5. Note the **Application (client) ID** and **Directory (tenant) ID**
+5. Note the **Application (client) ID** — you'll need it in step 1.4
 
-### 2. Create a Client Secret
+### 1.2 Create a Client Secret
 
 1. Go to **Certificates & secrets** &rarr; **Client secrets**
 2. Click **New client secret**
-3. Set a description and expiration
-4. Copy the **Value** immediately (it won't be shown again)
+3. Set a description (e.g., `SonicSaaS Auth`) and expiration
+4. Copy the **Value** immediately — it won't be shown again
 
-### 3. Enable Group Claims
+### 1.3 Enable Group Claims
 
 For automatic role mapping based on Entra security groups:
 
-1. Go to your app &rarr; **Manifest**
-2. Set `"groupMembershipClaims"` to `"SecurityGroup"`
-3. Go to **Token configuration** &rarr; **Add groups claim** &rarr; select **Security groups**
-4. Go to **API permissions** &rarr; **Add a permission** &rarr; **Microsoft Graph** &rarr; **Application permissions** &rarr; add `Group.Read.All` &rarr; click **Grant admin consent**. This enables the group browser in SonicSaaS (search and select groups by name instead of entering UUIDs manually). Without it, you can still create mappings by entering Group Object IDs manually.
-5. (Optional) Also add `GroupMember.Read.All` as a **Delegated** permission and grant admin consent (needed only if users belong to more than 150 groups)
+1. Go to your app &rarr; **Manifest** and set `"groupMembershipClaims"` to `"SecurityGroup"`
+2. Go to **Token configuration** &rarr; **Add groups claim** &rarr; select **Security groups** &rarr; check **Group ID** for the **ID token**
+3. Go to **API permissions** &rarr; **Add a permission** &rarr; **Microsoft Graph** &rarr; **Application permissions** &rarr; add `Group.Read.All` &rarr; click **Grant admin consent**. This enables the group browser in SonicSaaS (search and select groups by name instead of entering UUIDs manually). Without it, you can still create mappings by entering Group Object IDs manually.
+4. (Optional, overage fallback only) Also add `GroupMember.Read.All` as a **Delegated** permission and grant admin consent. Only needed when users belong to more than 150 groups — SonicSaaS falls back to Graph API in that case.
 
-## Configure SonicSaaS
+### 1.4 Set SonicSaaS Environment Variables
 
-1. Navigate to **Integrations &rarr; Microsoft Entra ID**
-2. Enter your **Tenant ID**, **Application (Client) ID**, and **Client Secret**
-3. Select the **Authentication Mode**:
-   - **Hybrid** &mdash; both SSO and password login available (default)
-   - **Entra-Only** &mdash; SSO required, password login disabled
-   - **Local-Only** &mdash; SSO disabled, password login only
-4. Click **Test Connection** to verify credentials
-5. Click **Save**
-6. Restart the application for changes to take effect
+On the SonicSaaS server, add these to `.env.production` (or your deployment's env config):
 
-Your client secret is encrypted at rest using AES-256-GCM.
+```env
+MICROSOFT_ENTRA_ID_CLIENT_ID=<application-client-id-from-1.1>
+MICROSOFT_ENTRA_ID_CLIENT_SECRET=<client-secret-value-from-1.2>
+AUTH_MODE=hybrid             # hybrid | entra-only | local-only
+ENTRA_DEFAULT_ROLE=member    # optional — role assigned when no group mapping matches
+```
 
-## Group-to-Role Mapping
+**Auth modes:**
 
-Create Entra security groups that map to SonicSaaS roles:
+- **`hybrid`** (default) — both SSO and password login available
+- **`entra-only`** — SSO required, password login disabled. MFA enforcement is deferred to Entra Conditional Access.
+- **`local-only`** — SSO disabled, password login only. No "Sign in with Microsoft" button.
 
-| Security Group | SonicSaaS Role | Description |
-|---|---|---|
-| `SonicSaaS-Owners` | owner | Full access including ownership transfer |
-| `SonicSaaS-Admins` | admin | Full manage access except ownership |
+**Restart SonicSaaS** after setting these variables. The "Sign in with Microsoft" button will appear on the login page once the platform credentials are detected.
+
+Client ID and secret live only in server-side environment variables — they are never stored in the database or exposed to the client. `AUTH_MODE` is platform-wide and cannot be set per-team.
+
+---
+
+## Part 2: Team Setup (per MSP team)
+
+Each MSP team that wants SSO needs to complete these steps once.
+
+### 2.1 Grant Admin Consent in Your Tenant
+
+Because SonicSaaS uses a multi-tenant app registration, each tenant admin must explicitly consent before users can sign in and group claims will be read.
+
+1. Ask your SonicSaaS platform administrator for the application (client) ID from [step 1.1](#11-register-a-multi-tenant-azure-app)
+2. Open this URL in your browser, replacing the placeholders:
+
+   `https://login.microsoftonline.com/{your-tenant-id}/adminconsent?client_id={sonicsaas-client-id}`
+
+3. Sign in as a tenant admin and accept the permissions
+
+Without admin consent, SSO login will fail or group-based role mapping won't work for your tenant.
+
+### 2.2 Register Your Tenant in SonicSaaS
+
+1. Navigate to **Integrations &rarr; Microsoft Entra ID** (`/dashboard/integrations/entra`)
+2. Enter your **Tenant ID** (your Azure AD directory ID — a GUID). This is the **only field you need** — client ID and secret are handled at the platform level.
+3. Leave **Enabled** toggled on.
+4. Click **Test Connection** to verify the platform can reach your tenant.
+5. Click **Save** — takes effect immediately. No restart required.
+
+Users from this tenant will now be routed to your team when they sign in. Users from unregistered tenants are blocked with `Your organization hasn't been set up for SSO yet`.
+
+### 2.3 Create and Map Security Groups
+
+Create Entra security groups for each SonicSaaS role you want to use. Name them to fit your org's naming convention — the examples below are suggestions:
+
+| Security Group Example | SonicSaaS Role | Description |
+| --- | --- | --- |
+| `SonicSaaS-Admins`    | admin    | Full manage access except ownership |
 | `SonicSaaS-Operators` | operator | Day-to-day device operations |
-| `SonicSaaS-Viewers` | viewer | Read-only access |
-| `SonicSaaS-Auditors` | auditor | Read-only + audit log access |
+| `SonicSaaS-Viewers`   | viewer   | Read-only access |
+| `SonicSaaS-Auditors`  | auditor  | Read-only + audit log access |
 
-After creating the groups in Entra, add each group's Object ID in **Security &rarr; SSO Group Mappings** (`/dashboard/security/group-mappings`).
+> **Note:** `owner` is never assigned via group mapping — it must be set explicitly in the SonicSaaS admin UI.
+
+After creating the groups in Entra, go to **Security &rarr; SSO Group Mappings** (`/dashboard/security/group-mappings`) and add each group's Object ID with the corresponding role. Set **Priority** (0–100, highest wins) to control which role applies when a user belongs to multiple groups.
+
+If a user signs in but doesn't match any mapped group, they are assigned the platform's `ENTRA_DEFAULT_ROLE` (default: `member`, which is equivalent to `operator`).
+
+---
 
 ## Conditional Access
 
-When using **entra-only** mode, MFA enforcement is deferred to Entra Conditional Access:
+When using **entra-only** mode, SonicSaaS defers MFA enforcement to Entra Conditional Access:
 
-1. Go to **Security** &rarr; **Conditional Access** in the Azure portal
+1. Go to **Security &rarr; Conditional Access** in the Azure portal
 2. Create a policy targeting your SonicSaaS app registration
 3. Require multifactor authentication
 
@@ -85,17 +134,29 @@ This replaces the local TOTP MFA that SonicSaaS provides for password-based acco
 ## Troubleshooting
 
 **"Sign in with Microsoft" button doesn't appear**
-- Verify the integration is saved and enabled, then restart SonicSaaS
-- Check the restart banner on the integration config page
 
-**Users sign in but get viewer role**
-- Verify `groupMembershipClaims` is set to `"SecurityGroup"` in the app manifest
-- Verify group Object IDs match exactly in SSO Group Mappings
+- Ask your platform admin to verify `MICROSOFT_ENTRA_ID_CLIENT_ID` and `MICROSOFT_ENTRA_ID_CLIENT_SECRET` are set and that `AUTH_MODE` is not `local-only`
+- Platform env var changes require a server restart
 
-**Changes not taking effect**
-- Entra config changes require an application restart. Look for the amber "Restart required" banner.
+**"Your organization hasn't been set up for SSO yet"**
+
+- Your Azure tenant is not registered with any SonicSaaS team
+- Complete [step 2.2](#22-register-your-tenant-in-sonicsaas) to add your tenant ID
+
+**Users sign in but get an unexpected role**
+
+- Verify `groupMembershipClaims` is set to `"SecurityGroup"` in the app manifest (platform step 1.3)
+- Verify the group Object IDs in **SSO Group Mappings** match the Entra group Object IDs exactly
+- Check that admin consent was granted in your tenant (step 2.1)
+- Users with no matching group get `ENTRA_DEFAULT_ROLE` (defaults to `member`/`operator`)
+
+**"Too many groups" / groups missing from the token**
+
+- This is the >150 groups overage scenario
+- Platform admin must add `GroupMember.Read.All` as a Delegated permission and grant admin consent
+- SonicSaaS will then use the Graph API fallback automatically
 
 ## Related
 
-- [Security Settings](/security) &mdash; MFA and password configuration
+- [Security Settings](/settings/security) &mdash; MFA and password configuration
 - [Integrations Overview](/integrations) &mdash; all available integrations
