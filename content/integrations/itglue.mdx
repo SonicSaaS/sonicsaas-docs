@@ -33,9 +33,30 @@ Your ITGlue API key is encrypted at rest using AES-256-GCM.
 - Network information (interfaces, IP addresses, VPN tunnels)
 - Compliance and security status
 
+## Sync-Back
+
+"Sync-back" is the continuous write path from SonicSaaS into ITGlue. Whenever SonicSaaS polls a device and collects updated data, relevant fields are written back to the matching ITGlue asset so your documentation stays current automatically.
+
+### What writes back
+
+- Device traits (model, serial, firmware, hostname, management address)
+- Network details (interfaces, IP assignments, VPN tunnel summaries)
+- Compliance and policy status flags
+
+### When it runs
+
+- After every successful device poll — no separate schedule to configure
+- On demand from the ITGlue integration page
+
+### Conflict handling
+
+Sync-back uses SonicSaaS as the source of truth for managed fields. If someone edits a synced field directly in ITGlue between sync runs, the SonicSaaS value overwrites it on the next write. Fields that SonicSaaS does not manage are left untouched, so your free-form notes, runbooks, and attachments are preserved.
+
+If you want a field to stay ITGlue-authoritative, unmap it in the ITGlue integration settings.
+
 ## Sync Schedule
 
-Synchronization can be run on demand or on an automated schedule. The platform tracks sync status and alerts you to any failures.
+Pull and full-push synchronization can be run on demand or on an automated schedule. Sync-back runs opportunistically with every poll. The platform tracks sync status and alerts you to any failures.
 
 ## Related
 

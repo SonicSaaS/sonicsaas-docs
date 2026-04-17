@@ -51,6 +51,16 @@ SonicSaaS connects to external services to extend fleet management capabilities.
 
 Each integration has its own configuration page with specific fields and instructions.
 
+## Inherited Configuration
+
+If your team is set up as a child of a parent team, most integrations can be inherited from the parent instead of configured separately. Inherited integrations use the parent's credentials and settings at request time — you see them as active on the integrations page without needing to re-enter anything.
+
+- **Default**: new integrations inherit from the parent if the parent has one configured
+- **Override**: save an integration locally to detach from inheritance and use your own credentials
+- **Revert**: clear a local configuration to return to inheriting from the parent
+
+**Exception — Entra ID group mappings**: SSO group-to-role mappings are always local to each team. They are not inherited, because group identifiers and role policy are team-specific. Parent credentials and tenant registration still inherit normally; only the group-to-role mapping is per-team.
+
 ## Integration Health
 
 Active integrations show health status:

@@ -20,9 +20,35 @@ Alerts can be delivered through multiple channels:
 - **In-app** — visible in the alert center dashboard
 - **Email** — sent via the [email integration](/integrations/email) if configured
 - **SIEM** — forwarded to [Splunk](/integrations/splunk) if configured
+- **Webhook** — posted to a custom endpoint
+- **Chat** — posted to Slack or Microsoft Teams
+- **PSA tickets** — auto-created in [ConnectWise](/integrations/connectwise) when configured (see below)
+
+## Alert-Driven ConnectWise Tickets
+
+When a ConnectWise integration is connected, you can configure alerts to automatically open a service ticket. This lets operations respond from your existing PSA workflow without watching the alert center.
+
+### How it works
+
+- An alert of a configured type fires for a device or organization
+- SonicSaaS opens a ConnectWise ticket using the board, company, and status you selected for that alert type
+- The ticket is linked to the alert so subsequent updates (acknowledge, resolve) reflect back as ticket notes
+- When the alert auto-resolves, the linked ticket is updated accordingly — no manual close required in most cases
+
+### What to configure
+
+1. Configure the [ConnectWise integration](/integrations/connectwise) so the correct company mappings exist for your managed organizations.
+2. On each alert type you want to escalate, set the destination board, default status, and priority.
+3. Choose whether recurring alerts should re-open the same ticket or create a new one.
+
+### Tips
+
+- Start with a small number of alert types (e.g., device unreachable, failed backup) so your PSA queue isn't flooded while you tune thresholds
+- Map SonicSaaS organizations to the right ConnectWise companies before enabling ticket creation — unmapped organizations will fall back to a default company if configured, or skip ticket creation
 
 ## Related
 
 - [Email Integration](/integrations/email) — configure email notifications
 - [Splunk Integration](/integrations/splunk) — forward events to SIEM
+- [ConnectWise Integration](/integrations/connectwise) — PSA setup and company mapping
 - [Operations](/operations) — track fleet operations
