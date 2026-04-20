@@ -8,5 +8,6 @@ export default {
   'compliance-status': 'Compliance Status',
   'backup-and-recovery': 'Backup & Recovery',
   'incident-response': 'Incident Response',
+  'permissions-requested': 'Permissions We Request',
   'admin-checklist': 'Admin Security Checklist',
 };

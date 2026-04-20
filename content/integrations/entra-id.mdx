@@ -50,7 +50,10 @@ For automatic role mapping based on Entra security groups:
 1. Go to your app &rarr; **Manifest** and set `"groupMembershipClaims"` to `"SecurityGroup"`
 2. Go to **Token configuration** &rarr; **Add groups claim** &rarr; select **Security groups** &rarr; check **Group ID** for the **ID token**
 3. Go to **API permissions** &rarr; **Add a permission** &rarr; **Microsoft Graph** &rarr; **Application permissions** &rarr; add `Group.Read.All` &rarr; click **Grant admin consent**. This enables the group browser in SonicSaaS (search and select groups by name instead of entering UUIDs manually). Without it, you can still create mappings by entering Group Object IDs manually.
-4. (Optional, overage fallback only) Also add `GroupMember.Read.All` as a **Delegated** permission and grant admin consent. Only needed when users belong to more than 150 groups — SonicSaaS falls back to Graph API in that case.
+4. (Optional, for the bulk-invite flow) Also add `User.Read.All` and `GroupMember.Read.All` as **Application** permissions and grant admin consent. These let SonicSaaS list the members of a mapped group so you can invite the ones who haven't signed up yet directly from the Group Mappings page. Without them, the "View members" button shows an admin-consent prompt.
+5. (Optional, overage fallback only) Also add `GroupMember.Read.All` as a **Delegated** permission and grant admin consent. Only needed when users belong to more than 150 groups — SonicSaaS falls back to Graph API in that case.
+
+For the full list of Microsoft Graph permissions SonicSaaS requests across all features (and what each one is used for), see [Permissions We Request](/security/permissions-requested).
 
 ### 1.4 Set SonicSaaS Environment Variables
 

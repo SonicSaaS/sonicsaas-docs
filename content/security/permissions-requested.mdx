@@ -1,0 +1,107 @@
+# Permissions We Request
+
+When you connect SonicSaaS to a third-party service — Microsoft Entra ID, your PSA, your firewall vendor portal, your SIEM — we ask for the minimum access needed to deliver the feature you're using. This page lists every permission SonicSaaS may request, why we need it, and what stops working without it. Use it when a tenant administrator asks "what is this app trying to do?".
+
+We follow the principle of least privilege: SonicSaaS never asks for an admin scope when a read scope will do, never asks for write access on data we only need to read, and never persists OAuth access tokens beyond the request that needs them. App-level credentials (client IDs, client secrets, API keys) live only in server-side environment variables or in your encrypted team configuration — they are never exposed to the browser.
+
+If you find a permission listed here that you'd rather not grant, you can decline it. The "What breaks without it" column tells you which feature you'll lose access to.
+
+---
+
+## Microsoft Entra ID (Microsoft Graph)
+
+SonicSaaS uses a single multi-tenant Azure app registration. Every tenant that wants SSO grants the same set of permissions to that app once. See [Microsoft Entra ID](/integrations/entra-id) for the full setup walkthrough.
+
+| Permission | Type | Why we need it | What breaks without it |
+| --- | --- | --- | --- |
+| `openid` `profile` `email` | Delegated | Standard OpenID Connect sign-in. Identifies the user signing in and reads their name + email for the SonicSaaS user record. | Sign in with Microsoft will not work at all. |
+| `Group.Read.All` | Application | Lists security groups in your tenant so admins can pick them by name on the Group Mappings page (rather than pasting GUIDs). | The group picker fails with an admin-consent prompt. Admins can still create mappings by entering Group Object IDs manually. |
+| `User.Read.All` | Application | Reads names + email addresses of users so the bulk-invite flow can show "view members" and send invitations to people who aren't yet SonicSaaS users. | The "View members" drawer on the Group Mappings page fails with an admin-consent prompt. |
+| `GroupMember.Read.All` | Application | Lists members of a specific security group — paired with `User.Read.All` for the bulk-invite flow. | Same as above — "View members" cannot enumerate the group. |
+| `GroupMember.Read.All` | Delegated | Fallback only. Used when a signed-in user belongs to more than 150 Entra groups (group claim "overage"). SonicSaaS calls Graph on behalf of the user to fetch their full group list. | Users with very many groups may sign in but receive no group-derived role. |
+
+We **do not** read mail, calendars, files, contacts, OneDrive content, Teams chats, or directory data beyond what is listed above. We never write back to the directory.
+
+---
+
+## MySonicWall
+
+| Credential | Type | Why we need it | What breaks without it |
+| --- | --- | --- | --- |
+| Username + password (per team) | Encrypted in DB | Authenticates to the MySonicWall portal to register devices to your account, pull device entitlements, license state, GMS status, and tenant configuration. | The MySonicWall integration is fully optional — without it you can still operate firewalls, but you lose entitlement sync, license visibility, GMS group changes, and tenant-aware device onboarding. |
+
+MySonicWall does not currently offer a delegated OAuth flow, so we use account credentials. Credentials are encrypted at rest with AES-256-GCM using a deployment-specific key, decrypted only at request time, and never exposed to the browser.
+
+See [MySonicWall integration](/integrations/mysonicwall) for setup and the full list of operations performed against your account.
+
+---
+
+## ConnectWise PSA
+
+| Credential | Type | Why we need it | What breaks without it |
+| --- | --- | --- | --- |
+| Public + private API key (per team) | Encrypted in DB | Reads companies, contacts, configurations, and tickets so SonicSaaS can map firewalls to your customers and sync alerts to PSA tickets. Writes new tickets and ticket notes for incidents you've opted to forward. | Without it, you can still use SonicSaaS in standalone mode. You lose customer/site mapping, ticket creation on alert, and the agreement-analysis feature. |
+
+API keys are issued per integrator account in ConnectWise — you control which member account they're tied to and which security role limits its access. We recommend a dedicated integrator account with the smallest role that can read companies and configurations and write tickets.
+
+See [ConnectWise PSA](/integrations/connectwise) for the recommended security role configuration.
+
+---
+
+## ITGlue
+
+| Credential | Type | Why we need it | What breaks without it |
+| --- | --- | --- | --- |
+| API key (per team) | Encrypted in DB | Reads organizations, configurations, and (optionally) password assets to enrich device metadata and synchronize firewall configurations into ITGlue documentation. | Without it, you can still use SonicSaaS. You lose the ITGlue documentation sync and password rotation publish. |
+
+ITGlue API keys are scoped at issuance — we recommend creating a dedicated key with read access to organizations + configurations, and write access to passwords only if you've opted into credential rotation publishing.
+
+---
+
+## Huntress
+
+| Credential | Type | Why we need it | What breaks without it |
+| --- | --- | --- | --- |
+| API key + secret (per team) | Encrypted in DB | Reads agent inventory and incident events so SonicSaaS can correlate firewall alerts with EDR signals. Read-only. | Without it, you can still use SonicSaaS. You lose Huntress correlation in the alerting pipeline. |
+
+---
+
+## Splunk
+
+| Credential | Type | Why we need it | What breaks without it |
+| --- | --- | --- | --- |
+| HTTP Event Collector (HEC) token | Encrypted in DB | Forwards SonicSaaS audit events and firewall log streams to your Splunk index. Write-only — SonicSaaS never reads from your Splunk. | Without it, SonicSaaS still keeps a 90-day in-database audit log. You lose centralized log shipping to your SIEM. |
+
+---
+
+## Outbound email (SMTP / Resend)
+
+| Credential | Type | Why we need it | What breaks without it |
+| --- | --- | --- | --- |
+| SMTP host + username + password, **or** Resend API key | Encrypted in DB (per-team SMTP) or env var (platform default) | Sends invitation emails, alert notifications, and password-reset emails. Outbound only — SonicSaaS never reads any mailbox. | Without it, the platform falls back to env-configured SMTP. If neither is configured, invitation and alert emails won't be delivered. |
+
+Per-team SMTP overrides the platform default so you can send from your own domain. The platform never reads incoming mail and does not request any inbox access.
+
+---
+
+## What we deliberately do *not* request
+
+To make scope review easier, here is what SonicSaaS will **never** ask for:
+
+- **Microsoft Graph**: `Mail.Read`, `Mail.Send`, `Files.Read`, `Files.ReadWrite`, `Calendars.Read`, `Sites.Read.All`, `Chat.Read`, `Directory.ReadWrite.All`, `User.ReadWrite.All`. SonicSaaS never reads or writes mail, files, calendars, SharePoint, Teams chats, or modifies directory objects.
+- **Microsoft Graph application admin scopes** beyond the read-only `*.Read.All` scopes listed above.
+- **Inbound email access** for any provider. We send mail; we do not receive it.
+- **Customer firewall WAN management beyond what your stored credentials authorize.** Firewall connections use credentials your team supplied, not platform-wide credentials, and respect whatever role those credentials have on the device.
+- **Browser-side access to credentials.** All third-party credentials are decrypted server-side at request time and never sent to the browser.
+
+If you ever see SonicSaaS requesting a permission not on this page, treat it as a bug or a security incident and report it via [Incident Response](/security/incident-response).
+
+---
+
+## See also
+
+- [Microsoft Entra ID setup](/integrations/entra-id)
+- [Authentication & MFA](/security/authentication)
+- [Roles & Permissions](/security/roles-and-permissions)
+- [Encryption](/security/encryption)
+- [Data Privacy & Isolation](/security/data-privacy)
