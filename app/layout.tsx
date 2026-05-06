@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Manrope, JetBrains_Mono } from 'next/font/google';
-import { Layout, Navbar, ThemeSwitch } from 'nextra-theme-docs';
+import { Layout, Navbar } from 'nextra-theme-docs';
 import { Head } from 'nextra/components';
 import { getPageMap } from 'nextra/page-map';
 import { Shield } from 'lucide-react';
@@ -9,6 +9,7 @@ import 'nextra-theme-docs/style.css';
 import './print.css';
 import './theme.css';
 import { ThemeSync } from '../components/theme-sync';
+import { ThemeToggle } from '../components/theme-toggle';
 import { SiteFooter } from '../components/footer';
 
 const manrope = Manrope({ subsets: ['latin'] });
@@ -38,7 +39,7 @@ const navbar = (
     className="!pl-4"
     projectLink="https://github.com/SonicSaaS/sonicsaas-docs"
   >
-    <ThemeSwitch lite />
+    <ThemeToggle />
   </Navbar>
 );
 
@@ -73,6 +74,7 @@ export default async function RootLayout({
             defaultMenuCollapseLevel: 1,
             autoCollapse: true,
           }}
+          nextThemes={{ defaultTheme: 'system' }}
         >
           <ThemeSync />
           {children}

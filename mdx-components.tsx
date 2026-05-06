@@ -1,5 +1,5 @@
 import { useMDXComponents as getDocsMDXComponents } from 'nextra-theme-docs';
-import { PrintButton } from './components/print-button';
+import { PageActions } from './components/page-actions';
 
 const docsComponents = getDocsMDXComponents();
 
@@ -8,7 +8,7 @@ export function useMDXComponents(components?: Record<string, unknown>) {
     ...docsComponents,
     h1: (props: React.ComponentPropsWithoutRef<'h1'>) => (
       <>
-        <PrintButton />
+        <PageActions />
         {docsComponents.h1!(props)}
       </>
     ),

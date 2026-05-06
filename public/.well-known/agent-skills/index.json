@@ -1,0 +1,24 @@
+{
+  "$schema": "https://raw.githubusercontent.com/cloudflare/agent-skills-discovery-rfc/main/schema/v0.2.0.json",
+  "version": "0.2.0",
+  "skills": [
+    {
+      "name": "sonicsaas-user-docs",
+      "type": "documentation",
+      "description": "End-user documentation portal for SonicSaaS — getting-started guides, integration setup (ITGlue, ConnectWise, Splunk, Entra ID), policy authoring, and operational playbooks.",
+      "url": "https://docs.sonicsaas.com"
+    },
+    {
+      "name": "sonicsaas-api",
+      "type": "openapi",
+      "description": "SonicSaaS REST API — secure fleet management for MSPs managing SonicWall firewalls. Exposes device inventory, configuration, policies, operations, alerting, backups, and firmware management. Authenticated via API key (Bearer sk_live_...).",
+      "url": "https://app.sonicsaas.com/api/v1/doc"
+    },
+    {
+      "name": "sonicsaas-api-docs",
+      "type": "documentation",
+      "description": "Human-readable Swagger UI for the SonicSaaS REST API — interactive try-it-out console with auth, request/response schemas, and examples.",
+      "url": "https://app.sonicsaas.com/api/v1/swagger"
+    }
+  ]
+}

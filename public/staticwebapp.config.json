@@ -1,8 +1,16 @@
 {
   "navigationFallback": {
     "rewrite": "/index.html",
-    "exclude": ["/_next/*", "/_pagefind/*", "/icon.svg", "*.{css,js,json,ico,png,jpg,svg,woff,woff2,wasm}"]
+    "exclude": ["/_next/*", "/_pagefind/*", "/icon.svg", "/.well-known/*", "*.{css,js,json,ico,png,jpg,svg,woff,woff2,wasm,xml,txt}"]
   },
+  "routes": [
+    {
+      "route": "/",
+      "headers": {
+        "Link": "<https://app.sonicsaas.com/api/v1/doc>; rel=\"service-desc\"; type=\"application/openapi+json\", <https://app.sonicsaas.com/api/v1/swagger>; rel=\"describedby\"; type=\"text/html\", </.well-known/agent-skills/index.json>; rel=\"https://cloudflare.com/agent-skills-discovery-rfc\"; type=\"application/json\""
+      }
+    }
+  ],
   "globalHeaders": {
     "X-Content-Type-Options": "nosniff",
     "X-Frame-Options": "DENY",

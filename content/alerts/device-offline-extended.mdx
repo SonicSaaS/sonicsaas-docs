@@ -1,0 +1,96 @@
+# Device Offline Extended — Runbook
+
+You're working a `device_offline_extended` ticket: a SonicWall has lost WAN connectivity for longer than your configured threshold. This page gets you from ticket open to ISP engaged.
+
+If the ticket's **Likely Cause** says anything other than "ISP issue", jump to [Not actually the ISP?](#not-actually-the-isp) below.
+
+## 1. Confirm it's the ISP
+
+Open the ticket. Read the top two sections:
+
+- **Likely Cause.** Look for "ISP issue" with `Gateway: UNREACHABLE` in the evidence lines. If the gateway is reachable but the WAN is down, it's the customer's edge equipment — see [Not actually the ISP?](#not-actually-the-isp).
+- **Failover Status.** If one WAN circuit is online and carrying traffic, the site is still up. Your ticket is "reduced redundancy" urgency, not "site down".
+
+The Likely Cause label is a heuristic — the gateway-reachability line below it is the reliable signal. When in doubt, trust the evidence over the label.
+
+## 2. Get the circuit details
+
+The **Affected WAN Circuits** section has everything the ISP will ask for:
+
+- ISP name and ASN (e.g. "AT&T (AS7018)")
+- Circuit ID (if registered)
+- Support phone and portal URL
+- Escalation contact (if registered)
+
+If the Circuit line is missing, the circuit isn't in your ISP registry. You can still call the main support line — the ISP will look up the circuit by service address.
+
+## 3. Call the ISP
+
+Before calling, check the ISP's status page for a regional incident. If there's one listed, note it in the CW ticket and skip to [step 5](#5-escalate-if-needed).
+
+On the call:
+
+1. Give them the **circuit ID or service address** (from the ticket's Circuit line, or from ITGlue if linked).
+2. Ask them to run a **line test** and report: is the circuit up from their perspective? If not, what's the fault code and estimated repair time?
+3. Get a **ticket number** from the ISP.
+4. Ask for a **callback when the circuit is restored** — saves you from polling them.
+
+## 4. Document in the CW ticket
+
+Add a CW note with:
+
+- ISP ticket number
+- Who you spoke to (name + office)
+- What they said (status + ETA)
+- Next check-in time
+
+This protects you if the ticket bounces to another tech or you hit an SLA clock.
+
+## 5. Escalate if needed
+
+If the ISP's stated ETA exceeds the client's SLA, or the rep is unhelpful:
+
+- Use the **Escalation** line from the ticket — it's populated from your ISP registry when a NOC lead or account rep is on file.
+- Fall back to the team SOP (linked at the bottom of every ticket as **SOP**) for client-specific escalation procedures.
+
+## 6. Watch for auto-resolve
+
+When connectivity comes back, SonicSaaS detects it automatically and closes the CW ticket with a recovery note containing:
+
+- Recovery timestamp
+- Total outage duration
+- Recovery path (direct recovery / failover carried traffic / all-WAN recovery)
+
+You don't need to close the ticket manually. If the ticket doesn't auto-close within a minute of the customer confirming connectivity, flag it — there may be a stuck probe or a mismatch between the WAN IP you fixed and the WAN IP being monitored.
+
+## Not actually the ISP?
+
+If the Likely Cause points somewhere else, work it from this checklist:
+
+### "Router/CPE issue" (gateway is reachable, WAN is not)
+
+The ISP's side of the circuit is healthy. The problem is the customer's firewall or its config.
+
+1. Check the **Outage Timeline** section of the ticket. If there's a firmware update or config push within an hour before the outage, that's your first suspect.
+2. Open the device's page in SonicSaaS (the **Device** link in the ticket) and check recent change history.
+3. If remote admin is unreachable, schedule a site visit. Power-cycling the firewall is often enough.
+
+### "Device offline" or "Unknown"
+
+We got signal up to or near the device, but the device itself isn't responding.
+
+1. Check out-of-band access (cellular modem, console server) if the client has one.
+2. Check HA pair status. If HA is configured and the peer is active, the alert should auto-resolve — give it a minute.
+3. Corroborate with other managed devices on the same site. If everything else is also down, it's a site power or building issue, not a firewall fault.
+
+If you genuinely can't classify, call the ISP anyway — a line test is fast and cheap, and rules out the most common cause.
+
+## Where per-client details live
+
+The ticket body pulls ISP contact info from your ISP registry. Anything that varies by client — after-hours escalation, alternate support numbers, specific maintenance windows, paging rules — belongs in the per-team **SOP URL**, configured under **Alerts → Configure** for this alert type. The SOP link appears in every ticket's Links section.
+
+## Related
+
+- [Alerts](/alerts) — alert center and notification channels
+- [ConnectWise Integration](/integrations/connectwise) — PSA setup and company mapping
+- [ITGlue Integration](/integrations/itglue) — document linking

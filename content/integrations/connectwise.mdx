@@ -1,12 +1,14 @@
 # ConnectWise PSA Integration
 
-Connect SonicSaaS to your ConnectWise Manage instance for company sync, location management, and automated service tickets.
+Connect SonicSaaS to your ConnectWise Manage instance for company sync, location management, automated service tickets, agreement migration, and time tracking — with sales-opportunity creation on the roadmap.
+
+This setup happens in two phases: a ConnectWise admin completes Steps 1–3 and hands off four values; a SonicSaaS administrator completes Steps 4–6.
 
 ## Prerequisites
 
-- Administrator access to ConnectWise Manage
-- Administrator or Owner access to SonicSaaS
-- Your ConnectWise Manage domain name and company ID
+- Administrator access to ConnectWise Manage (for Steps 1–3)
+- Administrator or Owner access to SonicSaaS (for Steps 4–6)
+- Your ConnectWise Manage **server URL** (e.g. `na.myconnectwise.net`) and **Company ID** — this is the short identifier you type at the ConnectWise login screen, *not* a numeric record ID
 
 ## Step 1: Create a Security Role
 
@@ -19,40 +21,42 @@ We recommend creating a dedicated security role for the SonicSaaS integration ra
 
 > **Warning:** Not using the specified security permissions may prevent SonicSaaS from syncing companies, creating tickets, or accessing agreement data.
 
-| Module | Area | Add | Edit | Delete | Inquire | Description |
+| Module | Area | Add | Edit | Delete | Inquire | Why SonicSaaS needs it |
 |---|---|---|---|---|---|---|
-| **Companies** | Company Maintenance | None | All | None | All | Syncs company data and updates address/contact fields |
-| **Companies** | Configurations | None | None | None | All | Reads configuration records for future asset management |
-| **Companies** | Contacts | None | None | None | All | Reads contact data for future contact sync |
-| **Finance** | Agreements | None | All | None | All | Scans agreements and manages product additions during migration |
-| **Finance** | Invoices | None | None | None | All | Reads invoice data for future billing dashboards |
-| **Procurement** | Product Catalog | None | None | None | All | Looks up products for agreement mapping |
-| **Service Desk** | Service Tickets | All | All | None | All | Creates and updates tickets from device alerts |
-| **System** | Member Maintenance | None | None | None | All | Reads member data for ticket assignment |
-| **System** | Table Setup | None | None | None | All | Reads board, status, type, and priority reference data |
+| **Companies** | Company Maintenance | None | All | None | All | Sync companies into SonicSaaS organizations; update site addresses and primary-flag metadata |
+| **Companies** | Configurations | None | None | None | All | Future: read configuration records for asset management (no writes today) |
+| **Companies** | Contacts | None | None | None | All | Future: read contacts for contact sync (no writes today) |
+| **Companies** | Team Members | None | None | None | All | Read account-team membership so tickets and opportunities route to the correct owners |
+| **Finance** | Agreements | All | All | All | All | Scan agreements; create, update, and roll back additions during the migration tool's three-step write path (POST new, PATCH to cancel old, DELETE on rollback) |
+| **Finance** | Invoicing | None | None | None | All | Future: read invoices for billing dashboards (no writes today) |
+| **Procurement** | Product Catalog | None | None | None | All | Look up catalog products when mapping SonicSaaS items to agreement additions |
+| **Sales** | Opportunity *(roadmap)* | All | All | None | All | Create and update sales opportunities from SonicSaaS (e.g. firmware-renewal or hardware-refresh leads surfaced from fleet data) — granted now so the role does not need re-provisioning when this ships |
+| **Service Desk** | Service Tickets | All | All | None | All | Create tickets from device alerts; append notes; update status when alerts resolve |
+| **Time and Expense** | Time Entry | All | All | All | All | Post, edit, and delete time entries from the SonicSaaS time-tracking feature; also gates timesheet submission |
+| **System** | Member Maintenance | None | None | None | All | Resolve ticket assignees; required baseline for the per-user impersonation flow on the roadmap |
+| **System** | My Company | None | None | None | All | Read company/version info for the SonicSaaS connection-test endpoint |
+| **System** | Table Setup | None | None | None | All | Read reference lists: service boards, statuses, types, priorities, sources, work types, work roles, charge codes |
 
-> We strongly recommend setting **Inquire** to **All** across all modules. Using a restricted inquire level may result in incomplete company syncing — SonicSaaS will only see companies visible at that level.
-
-5. Click **Save**
+When the matrix is filled in, click **Save**.
 
 ## Step 2: Create an API Member
 
 1. Go to **System > Members > API Members**
 2. Click the **+** button to create a new API member
 3. Fill in the **Profile** section:
-   - **Member ID** — e.g., `SonicSaaSAPI`
+   - **Member ID** — e.g., `SonicSaaS`
    - **Member Name** — e.g., `SonicSaaS Integration`
 4. Fill in the **System** section:
    - **Role ID** — select the **SonicSaaS Integration** role from Step 1
    - **Level** — select the highest level (e.g., Corporate) to ensure full company visibility
    - **Location** — your primary location
    - **Business Unit** — your primary business unit
+   - **Department** — your primary department (if shown)
    - **Default Territory** — your default territory
 
-> **Important:** The Level, Location, Business Unit, and Default Territory should be set to the highest available values. Companies and configurations synced from ConnectWise inherit these settings from the API member. Restricting them may cause incomplete syncing.
+> **Important:** Level, Location, Business Unit, Department, and Default Territory should all be set to the highest available values. Companies and configurations synced from ConnectWise inherit these settings from the API member. Restricting them may cause incomplete syncing.
 
-5. Click **Save**
-6. Confirm the API member is **Active**. An inactive member will invalidate any API keys associated with it.
+Click **Save**, then confirm the API member is **Active** — an inactive member invalidates any API keys associated with it.
 
 ## Step 3: Generate API Keys
 
@@ -64,6 +68,17 @@ We recommend creating a dedicated security role for the SonicSaaS integration ra
 > **Important:** The Private Key is only displayed once — at the time the key is created. Store it in a secure location immediately. There is no way to recover the Private Key after you close this screen. If you lose it, you must generate a new key pair.
 
 > **Note:** API keys cannot be regenerated. If you need to replace keys (e.g., lost private key, compromised credentials), you must create a new key pair and update the credentials in SonicSaaS.
+
+## Hand off to SonicSaaS
+
+Steps 1–3 are everything the ConnectWise admin needs to do. Send the SonicSaaS administrator these four values, then close out:
+
+- **Server Region** or full server URL (e.g. `na.myconnectwise.net`)
+- **Company ID** (the short identifier from the CW login screen)
+- **Public Key** from Step 3
+- **Private Key** from Step 3
+
+If your ConnectWise environment enforces a Client ID allow-list, contact SonicSaaS support to obtain the current production Client ID before completing the connection.
 
 ## Step 4: Connect SonicSaaS
 
@@ -78,7 +93,7 @@ We recommend creating a dedicated security role for the SonicSaaS integration ra
 5. Click **Test Connection** — a successful test displays your ConnectWise version number
 6. Click **Save**
 
-> If the connection test fails, verify that the API member is active, the keys are correct, and the security role has at minimum **System > Table Setup: Inquire All** (used for connection validation).
+> If the connection test fails, verify that the API member is **Active**, the keys are correct (no leading or trailing whitespace), and the Company ID matches the CW login screen value. See [Troubleshooting](#troubleshooting) for specific error codes.
 
 ## Step 5: Configure Company Sync
 
@@ -91,12 +106,43 @@ After saving credentials, set up company synchronization:
 
 SonicSaaS matches ConnectWise companies to your existing organizations by name. Unmatched companies are reported so you can review them.
 
+## Step 6: Verify the Role
+
+After the first sync completes, walk this checklist to confirm the security role is correctly provisioned. If any step fails with a 401/403 error, return to Step 1 and re-check the matrix row referenced in the failure.
+
+- **Connection test** — succeeds and displays a ConnectWise version number (uses *System → Table Setup: Inquire All*)
+- **Company sync** — returns a non-zero count of matched companies (uses *Companies → Company Maintenance: Inquire All*)
+- **Agreement scan** — opens at least one agreement with its line items visible (uses *Finance → Agreements: Inquire All*)
+- **Migration dry-run** — preview shows the additions it *would* create and cancel; do not execute (validates *Finance → Agreements: Add / Edit / Delete*)
+- **Test alert** — trigger a benign device alert and confirm a service ticket appears in ConnectWise (uses *Service Desk → Service Tickets: Add / Edit*)
+- **Time entry** — post a single test time entry from the SonicSaaS time UI (uses *Time and Expense → Time Entry: Add*)
+
+## Troubleshooting
+
+> **Connection test returns 401 Unauthorized.** The API member is inactive, the keys are wrong, or the Company ID is wrong. Confirm the member is **Active** in ConnectWise (Step 2.6), then re-paste both keys — leading or trailing whitespace will cause a failure.
+
+> **Connection test returns 403 Forbidden on a specific module.** The security role is missing the row for that module. Look at the failing endpoint in the SonicSaaS audit log and match it to the table in Step 1.
+
+> **Company sync runs but returns zero rows.** The API member's **Level / Location / Business Unit** is too restrictive. Set them to the highest available values (Step 2.4).
+
+> **Migration write fails with `E_ACCESS` on agreement additions.** *Finance → Agreements* is missing **Add All** or **Delete All**. The migration tool requires both — without them, rollback cannot run and a partial write may be left in ConnectWise. Update the role and re-run the migration.
+
+> **SSRF block / "host not allowed" on connection test.** The server URL points to a private or internal hostname. Use the public ConnectWise region URL (na/eu/au) or your provider's published custom domain.
+
+> **Ticket creation works but assignee is empty.** *System → Member Maintenance: Inquire All* is missing — SonicSaaS cannot resolve member records to assign tickets to.
+
 ## What the Integration Provides
 
 - **Company sync** — match ConnectWise companies to SonicSaaS organizations, with type and status filtering
 - **Location sync** — keep site and address data synchronized between platforms
 - **Ticket creation** — automatically create ConnectWise service tickets from device alerts, with deduplication
-- **Agreement scanning** — view agreements and product mappings for migration planning
+- **Agreement scanning & migration** — view agreements and run product-mapping migrations with dry-run preview
+- **Time tracking** — post time entries and submit timesheets from SonicSaaS to the API member's ConnectWise timesheet
+- **Sales opportunities** *(roadmap)* — surface fleet-driven leads (firmware renewals, hardware refreshes) as ConnectWise opportunities
+
+## Partner Client ID
+
+Every ConnectWise API call from SonicSaaS includes a registered partner Client ID in the `clientId` HTTP header. If your ConnectWise admin enforces a Client ID allow-list (Member > API Keys > Restricted Client IDs), contact SonicSaaS support to obtain the current production Client ID — it is treated as a credential and is not published in this documentation.
 
 ## Security
 
