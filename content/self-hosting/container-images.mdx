@@ -1,0 +1,145 @@
+---
+title: Container Images
+description: Pulling, pinning, and upgrading SonicSaaS container images from GitHub Container Registry for self-hosted deployments.
+keywords: [container images, GHCR, docker pull, upgrade, rollback, image pinning, self-hosting]
+---
+
+# Container Images
+
+SonicSaaS publishes Docker images to **GitHub Container Registry (GHCR)** at `ghcr.io/sonicsaas/sonicsaas-app`. Self-hosted MSPs pull these images instead of building from source.
+
+## Registry & authentication
+
+The repository is **public** — you do not need a GitHub account or PAT to pull. A plain `docker pull` works.
+
+If your environment requires authenticated pulls (corporate registry mirror, rate-limit avoidance), authenticate with a fine-grained PAT scoped to `read:packages`:
+
+```bash
+echo "$GITHUB_PAT" | docker login ghcr.io -u <your-github-username> --password-stdin
+```
+
+## Tag strategy
+
+| Tag                 | Meaning                                                              | When to use                                     |
+|---------------------|----------------------------------------------------------------------|-------------------------------------------------|
+| `latest`            | Most recent tagged release                                           | Dev / test only. **Do not pin production to `latest`.** |
+| `v1.2.3`            | Immutable version tag                                                | **Production.** Pin to a specific version.      |
+| `v1.2`              | Floating minor — auto-advances on patch releases                     | Production if you accept patch updates automatically |
+| `v1`                | Floating major — auto-advances on minor releases                     | Rarely useful in production                     |
+| `master`            | Bleeding-edge head of `master` branch                                | Internal testing only                           |
+| `master-<sha>`      | Commit-pinned build from `master`                                    | Reproducing an exact build for debugging         |
+
+**Rule of thumb:** production should pin to an exact `vMAJOR.MINOR.PATCH` tag and upgrade deliberately.
+
+## Specifying the image in compose
+
+`docker-compose.prod.yml` reads the image tag from an environment variable so you can override without editing committed files:
+
+```bash
+# .env.production
+SONICSAAS_IMAGE_TAG=v1.2.3
+```
+
+```yaml
+# docker-compose.prod.yml (excerpt)
+services:
+  app:
+    image: ghcr.io/sonicsaas/sonicsaas-app:${SONICSAAS_IMAGE_TAG:-latest}
+```
+
+## Upgrade procedure
+
+```bash
+cd /opt/sonicsaas-app
+
+# 1. Read the release notes for breaking changes / migration requirements
+#    (see https://github.com/SonicSaaS/sonicsaas-app/releases)
+
+# 2. Take a backup BEFORE upgrading — never skip this
+bash scripts/db-backup.sh
+
+# 3. Edit .env.production: bump SONICSAAS_IMAGE_TAG to the target version
+#    e.g. SONICSAAS_IMAGE_TAG=v1.3.0
+
+# 4. Pull the new image
+docker compose -p sonicsaas -f docker-compose.prod.yml pull
+
+# 5. Recreate the app container with the new image
+#    --no-deps so postgres/caddy stay running; only app restarts
+docker compose -p sonicsaas -f docker-compose.prod.yml up -d --no-deps app
+
+# 6. Verify
+curl -sf https://your-domain.example/api/v1/health && echo "OK"
+docker compose -p sonicsaas logs app --tail=50
+
+# 7. Migrations run automatically at app startup (Drizzle). Check logs for:
+#    "Migrations applied: …" or "No pending migrations"
+```
+
+## Rollback
+
+If something is wrong after upgrading:
+
+```bash
+# 1. Bump SONICSAAS_IMAGE_TAG back to the previous version in .env.production
+#    e.g. SONICSAAS_IMAGE_TAG=v1.2.3
+
+# 2. Re-pull and recreate the app
+docker compose -p sonicsaas -f docker-compose.prod.yml pull
+docker compose -p sonicsaas -f docker-compose.prod.yml up -d --no-deps app
+```
+
+**Important:** rollback only restores the application code. **Drizzle migrations are forward-only** — if the upgrade applied a schema migration that the older version can't read, you'll need to restore the database from the backup taken in step 2 of the upgrade. Release notes flag any release that includes such a migration.
+
+## Verifying image authenticity
+
+GHCR-published images can be verified against the SHA256 digest GitHub publishes alongside the tag:
+
+```bash
+docker pull ghcr.io/sonicsaas/sonicsaas-app:v1.2.3
+docker inspect --format='{{index .RepoDigests 0}}' ghcr.io/sonicsaas/sonicsaas-app:v1.2.3
+# Compare the @sha256:... part against the digest shown on
+# https://github.com/SonicSaaS/sonicsaas-app/pkgs/container/sonicsaas-app
+```
+
+Future releases will be signed with [cosign](https://docs.sigstore.dev/cosign/overview/); the verification command will be published with the first signed release.
+
+## Disk hygiene
+
+Old image layers accumulate over time. Prune them periodically:
+
+```bash
+# Show disk used by Docker
+docker system df
+
+# Remove dangling images (safe — only removes untagged, unreferenced layers)
+docker image prune -f
+
+# More aggressive: remove all unused images (anything not currently in use)
+docker image prune -a -f
+```
+
+## Air-gapped installs
+
+If your host has no internet access:
+
+```bash
+# On a host with internet
+docker pull ghcr.io/sonicsaas/sonicsaas-app:v1.2.3
+docker save ghcr.io/sonicsaas/sonicsaas-app:v1.2.3 -o sonicsaas-v1.2.3.tar
+
+# Transfer sonicsaas-v1.2.3.tar to the air-gapped host (sneakernet, internal repo, etc.)
+
+# On the air-gapped host
+docker load -i sonicsaas-v1.2.3.tar
+```
+
+The same approach works for the Postgres and Caddy base images.
+
+## Release cadence
+
+- **Patch (`vX.Y.Z`)**: bug fixes, security patches. Roughly weekly.
+- **Minor (`vX.Y.0`)**: new features. Roughly monthly.
+- **Major (`vX.0.0`)**: breaking changes. Rarely — when scheduled, called out in release notes 30+ days in advance.
+
+Subscribe to release notifications on GitHub: **Watch → Custom → Releases** on `github.com/SonicSaaS/sonicsaas-app`.

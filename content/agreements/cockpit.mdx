@@ -1,0 +1,90 @@
+---
+title: Agreements Cockpit
+description: Portfolio business health and the renewal pipeline — MRR, margin, revenue concentration, ARPA, billing-cycle mix, billing changes, and renewal exposure.
+keywords: [cockpit, MRR, ACV, margin, ARPA, revenue concentration, renewals, renewal pipeline, billing cycle, ConnectWise]
+---
+
+# Agreements Cockpit
+
+The Cockpit is the portfolio-level view of your ConnectWise book of business. The **Business Health** tab covers revenue, margin, and concentration; the **Renewals** tab covers expiring agreements.
+
+All figures are derived from active agreements in the most recent weekly snapshot.
+
+## Business Health
+
+### MRR
+
+Total monthly recurring revenue across every active ConnectWise agreement.
+
+> **Calculated as:** `MRR = sum of recurring additions' monthly value`. The card description shows **ACV** (annual contract value) = `MRR × 12`.
+
+### Monthly Margin
+
+Monthly recurring margin — revenue minus cost — across all agreements.
+
+> **Calculated as:** `margin = sum(monthly revenue − monthly cost)`. The description shows the **blended margin rate** = `margin ÷ MRR`.
+
+### Top Client Share
+
+The share of total MRR earned from your single largest client. High values flag revenue-concentration risk — losing one client would hurt disproportionately.
+
+> **Calculated as:** `largest client's MRR ÷ total MRR`. The description also gives the combined top-5 and top-10 shares.
+
+### Companies
+
+Distinct ConnectWise companies with at least one active agreement. The description adds the agreement and billing-line totals behind that number.
+
+> **Calculated as:** count of distinct companies across active (non-ended) agreements.
+
+### Clients with billing changes
+
+Clients whose ConnectWise spend has shifted materially so far this calendar month — a heads-up for proactive outreach.
+
+> **Calculated as:** count of clients whose net spend change since the start of the current calendar month is at least **$100** (the materiality threshold). Expand the tile to see each client and its dollar and percentage move.
+
+## Business Health charts
+
+### Revenue concentration
+
+Your largest clients ranked by MRR — a Pareto view of where revenue sits.
+
+> **Each bar** is a client's MRR, sorted highest to lowest; the top 15 are shown.
+
+### ARPA distribution
+
+How clients spread across average-revenue-per-account bands.
+
+> **Each bar** is the count of companies whose MRR falls in that band. The footer reports the median, mean, and 90th-percentile MRR.
+
+### Billing-cycle mix
+
+How recurring revenue splits across billing cycles (monthly, annual, and so on).
+
+> **Each slice** is the sum of revenue for additions on that billing cycle.
+
+### Margin mix by agreement type
+
+MRR and monthly margin side by side for each ConnectWise agreement type — shows which agreement types carry the profit.
+
+> **The paired bars** are the sum of MRR and the sum of monthly margin per agreement type.
+
+## Renewals
+
+### Renewal windows
+
+Active agreements grouped by how soon they expire — Expired, 0–30, 31–60, 61–90, 90+ days, and No end date. Each card shows the agreement count and the monthly recurring revenue at risk in that window.
+
+> **Calculated as:** the window is set by `days until the agreement's end date`; MRR at risk is the sum of recurring additions' monthly value for the agreements in that window.
+
+Clicking a window card filters the pipeline table below.
+
+### Renewal pipeline
+
+The table of every active agreement with its renewal window, end date, and MRR.
+
+> **Each row** is one agreement. **Days** is the count of calendar days until its end date — negative when the agreement is already past due.
+
+## Related
+
+- [Agreement Analysis](/agreements/analysis) — fleet-wide findings
+- [Products & Additions](/agreements/products) — SKU-level revenue and margin

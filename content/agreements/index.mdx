@@ -1,0 +1,36 @@
+---
+title: Agreements
+description: Analyze ConnectWise agreements across your fleet — billing gaps, upsell opportunities, renewal exposure, and product-level revenue and margin analytics.
+keywords: [agreements, ConnectWise, PSA, billing, findings, upsell, renewals, revenue, margin, service tiers]
+---
+
+# Agreements
+
+The Agreements area turns your ConnectWise Manage agreements into actionable revenue intelligence. A weekly scan compares what each client is billed against what their service tier expects, flags billing gaps and pricing problems, surfaces upsell opportunities, and rolls everything up into portfolio-wide health and renewal views.
+
+## Where the data comes from
+
+Every number in this section is derived from **ConnectWise Manage** — specifically your agreements and their additions (billable line items). SonicSaaS takes a weekly snapshot of that data and runs the analysis against it. Nothing here is computed from SonicWall devices.
+
+> **Prerequisite:** The [ConnectWise PSA integration](/integrations/connectwise) must be connected, and [Service Tiers](/agreements/tiers) should be configured so the analysis knows what each client is expected to be billed for.
+
+## The pages
+
+| Page | What it covers |
+| --- | --- |
+| [Agreement Analysis](/agreements/analysis) | Fleet-wide findings — billing gaps, coverage, revenue opportunity, and the AI brief |
+| [Per-Client View](/agreements/client) | One client's coverage, gaps, count accuracy, and recent billing changes |
+| [Cockpit](/agreements/cockpit) | Portfolio business health and the renewal pipeline |
+| [Products & Additions](/agreements/products) | SKU-level revenue, margin, frequency, and price-outlier analytics |
+| [Service Tiers](/agreements/tiers) | Configure the tiers, expected products, and agreement-type mappings the analysis runs against |
+
+## How the analysis runs
+
+A scheduled weekly scan walks every active agreement, applies the configured tiers and rules, and writes a set of **findings** and **upsell candidates** to an analysis run. Each run records its own totals, so the figures you see always belong to one point-in-time scan — the most recent completed run unless noted otherwise.
+
+You can also trigger a scan on demand from the Agreement Analysis page.
+
+## Related
+
+- [ConnectWise PSA Integration](/integrations/connectwise) — connect ConnectWise Manage
+- [ConnectWise Migration](/integrations/connectwise-migration) — migrate legacy agreements

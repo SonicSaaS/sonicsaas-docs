@@ -1,0 +1,80 @@
+---
+title: Agreement Analysis
+description: Fleet-wide agreement findings — clients analyzed, must-have gaps, revenue opportunity, coverage score, the revenue trend, the AI brief, findings, and upsell candidates.
+keywords: [agreement analysis, findings, billing gaps, coverage score, revenue opportunity, upsell, must-have, ConnectWise]
+---
+
+# Agreement Analysis
+
+The Agreement Analysis page is the fleet-wide view of the most recent weekly scan. Its four KPI cards summarize the run; the **Findings** and **Upsell** tabs break it down.
+
+All figures belong to the **latest completed analysis run**. Trigger a fresh scan with the **Run scan** action if the data looks stale.
+
+## Clients Analyzed
+
+How many ConnectWise companies were included in the latest analysis run.
+
+> **Calculated as:** the distinct company count recorded by the latest run.
+
+A company is in scope when it has at least one active agreement matching a configured agreement-type mapping.
+
+## Must-Have Gaps
+
+The most urgent items the scan found — every finding flagged **must-have** severity, across all analyzed companies. These are usually missing must-have products, but any finding the rules rate must-have is counted (a count mismatch or pricing problem can also be must-have).
+
+> **Calculated as:** count of findings where `severity = must-have`.
+
+Clicking the card opens the Findings tab filtered to must-have severity.
+
+## Revenue Opportunity
+
+The estimated recurring revenue available from acting on every finding in the run.
+
+> **Calculated as:** the sum of every finding's revenue opportunity, tallied by the latest run.
+
+Each finding carries a `revenueOpportunity` value — the recurring revenue you would capture by resolving it. Some values are estimated (from observed billing medians or catalog defaults); those are marked "est." in the Findings table.
+
+## Coverage Score
+
+A fleet-wide health score: the share of analyzed companies that have **zero** must-have gaps.
+
+> **Calculated as:** `clean companies ÷ companies analyzed × 100`, rounded — where a *clean* company has no must-have-severity findings.
+
+A score of 100% means no client is missing anything critical. The score falls as must-have findings accumulate on more companies.
+
+## Revenue Opportunity Trend
+
+A sparkline of total revenue opportunity across recent analysis runs.
+
+> **Calculated as:** one point per completed run — that run's total revenue opportunity — ordered oldest to newest.
+
+A rising line means new gaps are being found faster than existing ones are closed. A comparability warning appears when the set of analyzed companies changed enough between runs to make the trend noisy.
+
+## AI Insight
+
+A plain-language brief of the latest scan, written by an AI model. It highlights the most material findings and patterns so you do not have to read every row.
+
+Use the thread below the brief to ask follow-up questions or steer the analysis toward a specific client or finding type.
+
+## Findings
+
+The **Findings** tab lists every issue the scan detected on agreements clients *already have* — distinct from upsell, which suggests products they do not have yet. Finding types include missing products, pricing anomalies, peer-price outliers, count mismatches, legacy/replaceable SKUs, stale products, and margin problems.
+
+> **Each row** is one finding. Its **revenue opportunity** is the recurring revenue you would capture by resolving it.
+
+Filter by source, type, product, severity, or company; the active filters appear as chips above the table. Export the filtered set with the table's export action.
+
+## Upsell candidates
+
+The **Upsell** tab suggests products a client could *add* — services their service tier (or comparable peer clients) implies they should have, but do not yet.
+
+- **By Pattern** groups the same missing product across multiple clients, so you can pitch one product to many.
+- **By Client** lists each client's individual opportunities.
+
+Upsell candidates only appear once [Service Tiers](/agreements/tiers) are configured, or once there are enough comparable agreements to benchmark against.
+
+## Related
+
+- [Per-Client View](/agreements/client) — drill into one company
+- [Service Tiers](/agreements/tiers) — what the analysis compares against
+- [Cockpit](/agreements/cockpit) — portfolio health and renewals

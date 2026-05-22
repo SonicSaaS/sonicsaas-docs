@@ -1,0 +1,38 @@
+---
+title: Service Tiers
+description: Configure the service tiers, expected products, and agreement-type mappings the weekly agreement analysis runs against.
+keywords: [service tiers, expected products, agreement type mappings, count anchors, configuration, ConnectWise]
+---
+
+# Service Tiers
+
+The Service Tiers page is where you define what the [agreement analysis](/agreements/analysis) compares each client against. It is a configuration screen — there are no metrics here, but everything the analysis flags depends on what you set up.
+
+## Service Tiers
+
+Named service levels — for example Bronze, Silver, and Gold — that define which products a client at that tier is expected to be billed for.
+
+Create a tier for each level of service you sell. Each tier carries its own list of expected products and is linked to one or more ConnectWise agreement types in the mappings section below.
+
+## Expected Products
+
+The list of products a client on the selected tier should have on their agreement.
+
+When the weekly scan runs, any expected product missing from a client's agreement becomes a **gap** finding. Each expected product can be marked must-have or optional, which sets the severity of the resulting gap, and can specify an expected quantity or a count basis.
+
+> **Tip:** Start with a small must-have list per tier and expand it. Every expected product you add becomes a finding for every client on that tier who is not billed for it.
+
+## Agreement Type Mappings
+
+Links each ConnectWise agreement type to a service tier, so the analysis knows which tier's expected products to check a client against.
+
+An agreement whose type is not mapped to a tier is not analyzed for gaps. Map every agreement type you want covered.
+
+## Count anchors
+
+Tiers also drive [Count Coverage](/agreements/client#count-coverage). A **count anchor** is a product whose billed quantity stands in for a countable thing — computers, users, or mailboxes. Dependent products are then expected to be billed at a matching quantity, and the scan flags under- or over-billing.
+
+## Related
+
+- [Agreement Analysis](/agreements/analysis) — what the tiers produce
+- [Per-Client View](/agreements/client) — coverage and count checks per client

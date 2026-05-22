@@ -13,6 +13,7 @@ export default {
   licensing: 'Licensing',
   alerts: 'Alerts',
   reports: 'Reports',
+  agreements: 'Agreements',
   'network-map': 'Network Map',
   metrics: 'Metrics',
   benchmark: 'Benchmark',
@@ -22,4 +23,5 @@ export default {
   settings: 'Settings',
   admin: 'Administration',
   security: 'Security & Compliance',
+  'self-hosting': 'Self-Hosting',
 };

@@ -1,0 +1,60 @@
+---
+title: Per-Client View
+description: One client's agreement health — coverage, must-have gaps, revenue opportunity, count coverage, recent billing changes, and current agreements and additions.
+keywords: [client, agreement, coverage, must-have gaps, count coverage, billing changes, additions, ConnectWise]
+---
+
+# Per-Client View
+
+The per-client page drills the agreement analysis into a single ConnectWise company. It opens on **Opportunities**; the **Current Agreements** tab lists the underlying agreements and additions.
+
+## Coverage
+
+The share of this client's service-tier products that are actually billed on their agreements.
+
+> **Calculated as:** `products present ÷ products expected for the tier × 100`, rounded — where *present* is the expected products minus the ones flagged as gaps.
+
+100% means every product the tier expects is on an agreement.
+
+## Must-Have Gaps
+
+Critical "must-have" products from the client's service tier that are missing from their agreements.
+
+> **Calculated as:** count of **gap** findings with `severity = must-have`.
+
+Unlike the fleet-wide [Agreement Analysis](/agreements/analysis#must-have-gaps) card — which counts must-have findings of *any* type — this card is scoped to gap findings only.
+
+## Revenue Opportunity
+
+The recurring revenue available from closing every finding identified for this client.
+
+> **Calculated as:** the sum of each finding's revenue opportunity, **excluding** negative-margin findings and any finding suppressed as a duplicate during roll-up.
+
+## Count Coverage
+
+Estimates how many computers, users, and mailboxes the client has — read from the "anchor" products billed on their agreements — then checks that dependent products are billed to match.
+
+> **Calculated as:** for each count type, the count is the sum of billed quantities of that type's anchor SKUs. Dependent products are then compared against that count and flagged as matching, under, or over.
+
+Anchor and dependent products are configured per team — see [Service Tiers](/agreements/tiers).
+
+## Recent billing changes
+
+Additions added, removed, or re-priced on the client's agreements over the last 60 days of weekly scans. A headline badge appears when this month's net change clears 10% of current billing.
+
+> **Calculated as:** `% change = this month's net billing change ÷ current monthly billing`.
+
+The net change is the sum of detected price deltas dated to the current calendar month; current billing is the sum of extended price across the client's active additions.
+
+## Agreements and additions
+
+The **Current Agreements** tab lists every active ConnectWise agreement for the client and the billable additions on each, from the most recent weekly snapshot.
+
+> **Ext total** per agreement is the sum of each addition's extended price (quantity × unit price).
+
+Toggle **Show ended** to include agreements and additions that are no longer active.
+
+## Related
+
+- [Agreement Analysis](/agreements/analysis) — the fleet-wide view
+- [Service Tiers](/agreements/tiers) — expected products and count anchors

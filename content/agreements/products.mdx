@@ -1,0 +1,92 @@
+---
+title: Products & Additions
+description: SKU-level analytics across every agreement — distinct products, recurring revenue and margin, frequency, price outliers, and per-product detail.
+keywords: [products, additions, SKU, revenue, margin, frequency, price outliers, Tukey, ConnectWise]
+---
+
+# Products & Additions
+
+The Products page is the SKU-level view of every billable addition across all active ConnectWise agreements. Three KPI cards summarize the portfolio; the tabs break it down by revenue, margin, frequency, and price spread.
+
+A product's lines are **recurring** (a monthly value) or **one-time**. Several metrics deliberately use recurring lines only — each section notes which.
+
+## Distinct products
+
+Unique product SKUs that appear on at least one active agreement.
+
+> **Calculated as:** count of distinct products across all active-agreement lines — recurring and one-time lines both count.
+
+## Recurring revenue
+
+Total monthly recurring revenue across every recurring line on active agreements.
+
+> **Calculated as:** the sum of each product's monthly revenue. One-time lines are excluded.
+
+## Recurring margin
+
+Monthly recurring margin — revenue minus cost — across recurring lines.
+
+> **Calculated as:** `margin = sum of each product's monthly margin`. The description shows the **blended rate** = `sum(margin) ÷ sum(revenue)`.
+
+## Top products by monthly revenue
+
+Products ranked by the recurring revenue they generate each month — the biggest earners in the portfolio.
+
+> **Each bar** is the sum of a product's monthly revenue; recurring lines only.
+
+## Most common products
+
+Products ranked by how many agreements carry them — your most widely-sold SKUs.
+
+> **Each bar** is the count of distinct agreements carrying the product. Frequency includes one-time lines, and agreement count and company count are reported separately.
+
+## Best and worst margin
+
+Two charts rank recurring products by the monthly margin they generate — the best earners and the loss-makers.
+
+> **Each bar** is the sum of a product's monthly margin. A product must have at least **2** margin-bearing recurring lines to qualify, so a single outlier line cannot skew the ranking.
+
+## All products
+
+A sortable, filterable, exportable table with one row per product — revenue, margin, footprint, and pricing for each.
+
+> **One row per distinct product.** The count in the card title reflects any active search, category, margin, or status filters.
+
+## Price outliers
+
+Products billed at prices that deviate sharply from their own typical range — a signal for pricing review.
+
+> **An outlier** is a unit price beyond the **Tukey fences**: below `Q1 − 1.5 × IQR` or above `Q3 + 1.5 × IQR`, where IQR is the interquartile range of that product's prices. A product needs at least **5** price samples and a non-zero IQR to be evaluated.
+
+## Product detail
+
+Clicking a product opens its detail page — the same metrics scoped to one SKU across every client.
+
+### Monthly revenue
+
+> **Calculated as:** the sum of the product's monthly revenue per instance; one-time charges are reported separately.
+
+### Monthly margin
+
+> **Calculated as:** `margin = sum of monthly margin per instance`. The description shows the blended rate = `sum(margin) ÷ sum(revenue)`.
+
+### Footprint
+
+How widely the product is deployed.
+
+> **Calculated as:** `companies = distinct company IDs`, `agreements = distinct agreement IDs`, `lines = billed instance rows`.
+
+### Unit price
+
+> **Calculated as:** the median of the product's positive unit prices across instances; the description shows the min–max spread.
+
+### All instances
+
+The table of every billed line of the product across all clients.
+
+> **Each row** is one addition. The count is the total number of billed lines carrying the product.
+
+## Related
+
+- [Cockpit](/agreements/cockpit) — portfolio-level revenue and margin
+- [Agreement Analysis](/agreements/analysis) — billing gaps and findings

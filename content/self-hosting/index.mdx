@@ -1,0 +1,138 @@
+---
+title: Self-Hosting
+description: Deploy SonicSaaS on your own Docker infrastructure as an MSP. Single-tenant install, customer-owned data, full operational control.
+keywords: [self-hosting, on-premise, MSP, Docker, deployment, install, MySonicWall, customer-owned]
+---
+
+# Self-Hosting SonicSaaS
+
+SonicSaaS ships as a Docker stack you can run on your own infrastructure. This is the **Self-Hosted (MSP)** deployment path — an MSP runs a single-tenant install to manage their own customers' SonicWall fleet. Your data stays on your hardware, in your cloud account, behind your network controls.
+
+If you'd rather subscribe to the SonicSaaS-managed hosted product, see [Getting Started](/getting-started) instead.
+
+## Who this path is for
+
+This path fits an MSP who:
+
+- Has a Docker host (bare-metal Ubuntu, a cloud VM, or on-prem hypervisor) and is comfortable running `docker compose`.
+- Wants customer firewall data to stay inside their own administrative boundary (data residency, regulatory, or contractual requirement).
+- Manages a single fleet of SonicWall devices — SonicSaaS self-hosted is **single-tenant per install**. If you need to isolate sub-customers, run separate installs.
+- Will run their own backups, TLS, and patching, or has documented operational standards covering them.
+
+## What you'll deploy
+
+Three containers, one host:
+
+| Container       | Purpose                                              |
+|-----------------|------------------------------------------------------|
+| PostgreSQL 16   | Persistent storage — devices, audit log, schedules   |
+| SonicSaaS app   | Next.js + Hono + pg-boss worker                      |
+| Caddy           | Reverse proxy + automatic Let's Encrypt TLS          |
+
+Plus the data you supply: a domain name pointing at your host, SMTP credentials for outbound email, and a `LICENSE_KEY` if you've purchased one.
+
+## Sizing
+
+Sizing depends on the number of SonicWall devices in your fleet. The shared Postgres connection budget is 150; the app's `DB_POOL_MAX` is 15 by default.
+
+| Fleet size            | vCPU | RAM   | Disk             | Notes                                          |
+|-----------------------|------|-------|------------------|------------------------------------------------|
+| Up to 50 devices      | 2    | 4 GB  | 40 GB SSD        | Comfortable for one MSP getting started        |
+| 50–200 devices        | 2    | 8 GB  | 80 GB SSD        | Most common starting point                     |
+| 200–500 devices       | 4    | 16 GB | 200 GB SSD       | Bump `DB_POOL_MAX` and Postgres `shared_buffers` |
+| 500+ devices          | 4–8  | 16–32 GB | 500 GB+ SSD   | Consider moving Postgres to a managed service  |
+
+Polling cadence and the number of integrations (ITGlue, ConnectWise) you enable also affect load — start conservative and scale up.
+
+## Install
+
+The installer handles prerequisites, secrets generation, Docker build, health checks, and optional test-user seeding.
+
+```powershell
+git clone https://github.com/SonicSaaS/sonicsaas-app.git sonicsaas
+cd sonicsaas
+./install.ps1
+```
+
+When prompted, supply your domain (or leave blank for localhost / HTTP-only). The installer will:
+
+1. Check for Docker (auto-install Docker Desktop on Windows if missing).
+2. Generate cryptographic secrets and write `.env.production`.
+3. Build the Docker image and start the stack.
+4. Wait for health checks.
+5. Optionally seed a first admin user.
+
+Full step-by-step reference: see the [Self-Hosted Deployment Guide](https://github.com/SonicSaaS/sonicsaas-app/blob/master/docs/deployment/self-hosted.md) in the application repository.
+
+## License activation
+
+A license is **optional** — the unlicensed tier covers core fleet management. Licensed tiers unlock additional features.
+
+When your license arrives by email:
+
+1. Edit `.env.production` and uncomment the `LICENSE_KEY=` line, pasting the JWT.
+2. Restart the app container:
+   ```bash
+   docker compose -p sonicsaas -f docker-compose.prod.yml --env-file .env.production up -d app
+   ```
+3. Visit **Admin → Licensing** to confirm the tier and expiry are recognised.
+
+The full lifecycle (rotation, verification, recovery) is documented in [Key Management](https://github.com/SonicSaaS/sonicsaas-app/blob/master/docs/deployment/key-management.md#license-keys-in-production).
+
+## Updates
+
+SonicSaaS publishes container images to `ghcr.io/sonicsaas/sonicsaas-app`. To upgrade:
+
+```bash
+cd /opt/sonicsaas-app
+docker compose -p sonicsaas pull
+docker compose -p sonicsaas up -d
+```
+
+For pinning to specific versions, rollback procedures, and image signing, see [Container Images](./container-images).
+
+## Backups
+
+The app runs `pg_dump` on a schedule (default hourly, controlled by `DB_BACKUP_SCHEDULE`). Backups land in `./backups/` on the host. You are responsible for getting those backups off-host — typical patterns:
+
+- `rsync` to another server / cloud storage.
+- `aws s3 sync` to an S3 bucket.
+- `az storage blob sync` to Azure Blob.
+- Snapshot the host disk on your hypervisor's schedule.
+
+A redundant host-level cron is **only** needed if you want a copy independent of the app's own backup loop. See [bare-metal-ubuntu.md](https://github.com/SonicSaaS/sonicsaas-app/blob/master/docs/deployment/bare-metal-ubuntu.md#schedule-backups) for an example cron entry.
+
+**Critical:** also back up `.env.production`. The `DEVICE_ENCRYPTION_KEY` inside it is irrecoverable — lose it and every stored device credential is cryptographically gone.
+
+## Updates, security patches, and CVE response
+
+- **Application updates:** pull a new image tag on your schedule (see above).
+- **Base image security patches:** rebuild from a fresh base image periodically — the upstream Node + Alpine images receive CVE fixes.
+- **Host OS patches:** your responsibility. Recommend `unattended-upgrades` on Ubuntu.
+- **CVE notifications:** subscribe to SonicSaaS release notes; critical fixes are tagged.
+
+## Support escalation
+
+Self-hosted MSPs can open issues against [github.com/SonicSaaS/sonicsaas-app](https://github.com/SonicSaaS/sonicsaas-app/issues) for product bugs. Operational support (your install isn't starting, backups aren't running) is community-supported by default; commercial support is available — contact sales.
+
+When opening an issue, please attach:
+
+- SonicSaaS version (visible at **Admin → System**).
+- Host OS + Docker / Compose version.
+- Relevant lines from `docker compose logs app caddy postgres` (sanitised — no secrets).
+- License tier (if any).
+
+## What's NOT in scope for self-hosted
+
+These are SonicSaaS-managed-only:
+
+- Centralised threat intelligence rollup across tenants.
+- Cross-MSP analytics or benchmarking.
+- Managed automatic upgrades — you control your own upgrade cadence.
+- 24/7 monitored uptime SLA.
+
+## Next steps
+
+- [Container Images](./container-images) — how to consume, pin, and rotate images
+- [Getting Started](/getting-started) — once your install is up, configure your first device
+- [Integrations](/integrations) — wire up ITGlue, ConnectWise, MySonicWall
