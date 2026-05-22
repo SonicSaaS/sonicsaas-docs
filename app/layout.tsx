@@ -11,6 +11,7 @@ import './theme.css';
 import { ThemeSync } from '../components/theme-sync';
 import { ThemeToggle } from '../components/theme-toggle';
 import { SiteFooter } from '../components/footer';
+import { SearchWithFilter } from '../components/search-with-filter';
 
 const manrope = Manrope({ subsets: ['latin'] });
 const jetbrainsMono = JetBrains_Mono({
@@ -74,6 +75,7 @@ export default async function RootLayout({
             defaultMenuCollapseLevel: 1,
             autoCollapse: true,
           }}
+          search={<SearchWithFilter />}
           nextThemes={{ defaultTheme: 'system' }}
         >
           <ThemeSync />
