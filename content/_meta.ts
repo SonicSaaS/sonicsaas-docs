@@ -20,6 +20,7 @@ export default {
   compatibility: 'Compatibility',
   compliance: 'Compliance',
   integrations: 'Integrations',
+  api: 'API Reference',
   settings: 'Settings',
   admin: 'Administration',
   security: 'Security & Compliance',

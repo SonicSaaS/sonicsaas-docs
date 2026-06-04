@@ -21,13 +21,19 @@ function walk(dir: string): string[] {
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
+  // No `lastModified`: a build-time `new Date()` stamps every page with the same
+  // date on every build — an unverifiable freshness signal Google learns to
+  // distrust. Omitting it is honest. (Accurate per-file dates would require the
+  // git commit date + a full-history checkout; revisit if that signal is wanted.)
+  // changeFrequency/priority are kept but note Google ignores both.
   return walk(CONTENT_DIR).map((file) => {
     const rel = relative(CONTENT_DIR, file).split(sep).join('/').replace(/\.mdx$/, '');
     const path = rel === 'index' ? '' : rel.replace(/\/index$/, '');
     return {
-      url: path ? `${BASE_URL}/${path}` : `${BASE_URL}/`,
-      lastModified: now,
+      // Root emitted without a trailing slash to match the homepage canonical
+      // (metadataBase resolves "/" to the bare origin). Keeps sitemap <loc> and
+      // <link rel=canonical> byte-identical.
+      url: path ? `${BASE_URL}/${path}` : BASE_URL,
       changeFrequency: 'weekly',
       priority: path === '' ? 1.0 : 0.7,
     };

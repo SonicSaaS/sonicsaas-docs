@@ -19,13 +19,31 @@ const jetbrainsMono = JetBrains_Mono({
   variable: '--font-mono',
 });
 
+const SITE_DESCRIPTION =
+  'Documentation for SonicSaaS — secure fleet management for MSPs.';
+
 export const metadata: Metadata = {
+  // metadataBase makes per-page canonical + og:image URLs resolve to absolute
+  // https://docs.sonicsaas.com/... — required for the canonical tags added in
+  // app/[[...mdxPath]]/page.tsx and the generated opengraph-image.
+  metadataBase: new URL('https://docs.sonicsaas.com'),
   title: {
     default: 'SonicSaaS Documentation',
     template: '%s — SonicSaaS Docs',
   },
-  description:
-    'Documentation for SonicSaaS — secure fleet management for MSPs.',
+  description: SITE_DESCRIPTION,
+  openGraph: {
+    type: 'website',
+    siteName: 'SonicSaaS Docs',
+    url: 'https://docs.sonicsaas.com',
+    title: 'SonicSaaS Documentation',
+    description: SITE_DESCRIPTION,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'SonicSaaS Documentation',
+    description: SITE_DESCRIPTION,
+  },
 };
 
 const navbar = (

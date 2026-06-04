@@ -4,3 +4,13 @@ out/
 feedback-screenshots/
 .playwright-mcp/
 tsconfig.tsbuildinfo
+
+# Local SEO/analytics credentials (kept under C:\tmp\sonicsaas-secrets by default;
+# these patterns are a guard in case a key/token ever lands in this PUBLIC repo
+# tree). Mirrors the marketing repo's .gitignore.
+secrets/
+*-sa.json
+*.token
+gsc-sa.json
+cf-analytics.token
+cf-zone-id.txt

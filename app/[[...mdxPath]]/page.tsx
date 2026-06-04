@@ -8,7 +8,17 @@ export async function generateMetadata(props: {
 }) {
   const params = await props.params;
   const { metadata } = await importPage(params.mdxPath);
-  return metadata;
+  // Self-referencing canonical. The path MUST match the sitemap's <loc> form
+  // (app/sitemap.ts): index route -> "/", every other route -> "/seg/seg" with
+  // NO trailing slash. metadataBase (app/layout.tsx) resolves this to absolute.
+  // Merge into Nextra's metadata so its per-page OG/frontmatter isn't clobbered.
+  const canonical = params.mdxPath?.length
+    ? `/${params.mdxPath.join('/')}`
+    : '/';
+  return {
+    ...metadata,
+    alternates: { ...metadata.alternates, canonical },
+  };
 }
 
 const Wrapper = useMDXComponents().wrapper!;

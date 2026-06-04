@@ -11,17 +11,12 @@ export function SiteFooter() {
             &copy; {year} SonicSaaS. All rights reserved.
           </p>
           <div className={styles.links}>
+            <a href="https://sonicsaas.com">sonicsaas.com</a>
             <a href="https://sonicsaas.com/privacy">Privacy</a>
             <a href="https://sonicsaas.com/terms">Terms</a>
             <a href="https://sonicsaas.com/security">Security</a>
             <a href="https://sonicsaas.com/acceptable-use">Acceptable Use</a>
-            <a
-              href="https://app.sonicsaas.com/api/v1/swagger"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              API Docs
-            </a>
+            <a href="/api">API Reference</a>
             <a
               href="https://status.sonicsaas.com"
               target="_blank"

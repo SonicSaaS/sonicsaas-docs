@@ -1,0 +1,76 @@
+---
+title: API Reference
+description: The SonicSaaS REST API — authentication, error format, rate limits, pagination, and the live OpenAPI explorer for programmatic fleet management of SonicWall firewalls.
+keywords: [SonicSaaS API, REST API, OpenAPI, Swagger, fleet management API, SonicWall API, MSP automation]
+---
+
+# API Reference
+
+SonicSaaS is a secure fleet management platform for MSPs managing SonicWall
+firewalls. The REST API provides programmatic access to devices, configurations,
+policies, alerting, reporting, and fleet operations.
+
+The full, always-current reference is published as an interactive OpenAPI
+explorer:
+
+- **[Open the interactive API explorer →](https://app.sonicsaas.com/api/v1/swagger)** — browse every
+  endpoint, request/response schema, and try calls against your instance.
+- **OpenAPI spec:** [`https://app.sonicsaas.com/api/v1/doc`](https://app.sonicsaas.com/api/v1/doc)
+
+## Authentication
+
+All data endpoints require authentication via API key. Public endpoints
+(`/health`, `/doc`, `/swagger`) do not. Pass the key as a Bearer token:
+
+```
+Authorization: Bearer sk_live_your_api_key_here
+```
+
+Generate API keys from **Settings → API Keys** in the SonicSaaS dashboard.
+
+## Base URL
+
+The API is versioned under `/api/v1` on your SonicSaaS instance:
+
+```
+https://your-instance.example.com/api/v1
+```
+
+## Error format
+
+All errors follow [RFC 9457 Problem Details](https://www.rfc-editor.org/rfc/rfc9457):
+
+```json
+{
+  "type": "https://api.sonicsaas.com/problems/validation-error",
+  "title": "Validation Error",
+  "status": 422,
+  "detail": "name: Required",
+  "instance": "/requests/abc-123"
+}
+```
+
+## Rate limiting
+
+Requests are rate-limited per API key. When the limit is exceeded you'll receive
+a `429 Too Many Requests` response.
+
+## Pagination
+
+List endpoints accept `limit` (max 100) and `offset` query parameters.
+
+## Endpoint groups
+
+The API is organized around the platform's core domains, including:
+
+- **Devices** — firewall inventory, status, and details
+- **Configurations** — device configuration objects, rules, zones, and groups
+- **Policies** — policy definitions and compliance state
+- **Operations** — firmware, backups, and fleet operations
+- **VPN & WAN** — tunnel and WAN/ISP monitoring
+- **Security services & licensing** — service status and license inventory
+- **Alerting & reports** — alert rules and generated reports
+- **Integrations** — PSA/documentation platform connections
+
+See the [interactive explorer](https://app.sonicsaas.com/api/v1/swagger) for the
+complete, authoritative list of endpoints and their schemas.

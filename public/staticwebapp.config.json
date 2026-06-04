@@ -9,6 +9,10 @@
       "headers": {
         "Link": "<https://app.sonicsaas.com/api/v1/doc>; rel=\"service-desc\"; type=\"application/openapi+json\", <https://app.sonicsaas.com/api/v1/swagger>; rel=\"describedby\"; type=\"text/html\", </.well-known/agent-skills/index.json>; rel=\"https://cloudflare.com/agent-skills-discovery-rfc\"; type=\"application/json\""
       }
+    },
+    {
+      "route": "/opengraph-image",
+      "headers": { "content-type": "image/png" }
     }
   ],
   "globalHeaders": {
