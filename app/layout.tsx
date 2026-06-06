@@ -83,6 +83,28 @@ export default async function RootLayout({
         }}
       />
       <body>
+        {/* Organization entity (same @id as the marketing site) so Google can
+            associate the SonicSaaS brand + logo with the docs subdomain too. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Organization',
+              '@id': 'https://sonicsaas.com/#organization',
+              name: 'SonicSaaS',
+              url: 'https://sonicsaas.com',
+              logo: {
+                '@type': 'ImageObject',
+                url: 'https://sonicsaas.com/logo.png',
+                width: 512,
+                height: 512,
+              },
+              description:
+                'Cloud-based SonicWall firewall fleet management platform for Managed Service Providers.',
+            }),
+          }}
+        />
         <Layout
           navbar={navbar}
           footer={footer}
