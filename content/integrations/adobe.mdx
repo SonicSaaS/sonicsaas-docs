@@ -6,7 +6,7 @@ keywords: [Adobe, seat sync, ConnectWise, billing, true-up, user groups, license
 
 # Adobe Seat Sync
 
-Adobe Seat Sync turns your monthly **Adobe Admin Console user export** into a true-up of ConnectWise agreement addition quantities. You upload the CSV, review a preview of every change, and push the confirmed counts to ConnectWise. Nothing is written until you push.
+Adobe Seat Sync turns your monthly **Adobe Admin Console user export** into a true-up of ConnectWise agreement addition quantities. You upload the CSV, review a preview of every change, and push the confirmed counts to ConnectWise — **creating** missing lines, **updating** quantities, and **cancelling** additions for companies that dropped off. Nothing is written until you push.
 
 ## How counting works
 
@@ -94,11 +94,22 @@ The preview classifies every row so you can see exactly what will change before 
 | **Ready** | Mapped and the quantity differs — the push updates it |
 | **No change** | Quantity already matches ConnectWise |
 | **No addition** | No line item yet — check the row to create it during the push |
+| **Orphaned** | ConnectWise still bills this company × product, but it's absent from this export — check the row to cancel it during the push |
 | **Unmatched** | Pick a ConnectWise company for the group, domain, or email |
 | **Multiple additions** | The product is billed on more than one agreement — narrow by agreement type or resolve in ConnectWise |
 | **License unmapped** | Map the Adobe product to a ConnectWise product (or exclude it) |
 
-Expand any row to see the exact user email addresses behind its count. When you push, creates and quantity updates ship together as a single tracked operation, and each update is re-checked live against ConnectWise before it changes.
+Expand any row to see the exact user email addresses behind its count. When you push, creates, quantity updates, and cancels ship together as a single tracked operation, and each change is re-checked live against ConnectWise before it is applied.
+
+## Cancelling orphaned additions
+
+The sync catches billing that should **stop**, not just start. When a company or product you previously billed is **no longer in this month's export** — a client dropped Acrobat, or moved off Adobe entirely — its ConnectWise addition would otherwise keep billing forever. SonicSaaS flags these as **Orphaned** and offers to cancel them, symmetric to how **No addition** rows offer to create.
+
+- Orphaned rows are **opt-in** — the cancel checkbox is unchecked by default, because removing a billing line is deliberate.
+- Cancelling sets the addition's **cancel date** in ConnectWise: billing stops at period end, the line and its invoice history are **preserved**, and it's **reversible**.
+- Each cancel is re-verified live before writing and recorded in the audit log.
+
+> **Safety:** SonicSaaS **skips** orphan detection entirely when the export has no usable rows, so a bad file can't mass-cancel your billing. Confirm a company has genuinely dropped the product before cancelling; a false positive from a partial export is simply left unchecked.
 
 ## Tips
 
@@ -109,4 +120,5 @@ Expand any row to see the exact user email addresses behind its count. When you 
 ## Related
 
 - [ConnectWise PSA](/integrations/connectwise) — connect the PSA that holds the agreements
+- [Avanan Seat Sync](/integrations/avanan) · [Duo Seat Sync](/integrations/duo) — the other seat-sync sources
 - [Agreement Analysis](/agreements/analysis) — review agreement and addition data

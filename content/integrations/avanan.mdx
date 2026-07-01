@@ -1,0 +1,86 @@
+---
+title: Avanan Seat Sync
+description: Upload your monthly Avanan tenant export to true-up ConnectWise agreement addition quantities — create missing lines, update seat counts, and cancel additions for tenants that dropped off.
+keywords: [Avanan, seat sync, ConnectWise, agreement additions, billing true-up, license mapping, orphaned additions, email security]
+---
+
+# Avanan Seat Sync
+
+Keep your ConnectWise billing aligned with what your clients actually use in Avanan. Each month you upload the Avanan tenant export and SonicSaaS reconciles it against your ConnectWise agreement additions — **creating** missing lines, **updating** seat counts, and **cancelling** additions for tenants that have dropped off. Every change is previewed, and **nothing is written to ConnectWise until you press Push**.
+
+## Prerequisites
+
+- [ConnectWise](/integrations/connectwise) connected, with at least one agreement scan completed (the seat sync reconciles against the local agreement snapshot)
+- Agreement-management permission (`psa:agreements.manage`) in SonicSaaS
+- A current Avanan tenant export in CSV form (from the Avanan / Check Point Infinity portal)
+
+## How matching works
+
+SonicSaaS matches each **Avanan tenant** to a **ConnectWise company by name**. The first time a tenant is matched, the choice is saved against its portal and reused every month — so keeping each Avanan tenant's name aligned with its ConnectWise company name keeps auto-matching clean with almost no upkeep.
+
+> **Best practice:** name each Avanan tenant to match its ConnectWise company. Aligned names auto-match with high confidence; mismatches must be linked by hand once, then they're remembered.
+
+## Step 1: Map your license tiers
+
+Each Avanan license tier (the value in the export's `License` column, e.g. *Email Advanced Protect*) must be linked to the ConnectWise catalog **product** that bills those seats.
+
+1. Go to **Integrations → Avanan Seats** and open the **Setup** panel
+2. Under **License mappings**, type the Avanan license tier and pick the ConnectWise product
+3. Click **Save mapping** — repeat for every tier that appears in your export
+
+> **Note:** rows whose license has no mapping show as **License unmapped** and cannot be pushed until the mapping exists. You can also mark a tier **no-charge** to drop its seats from the preview entirely — never mapped, never billed.
+
+## Step 2: Upload the export
+
+1. Click **Upload Avanan CSV** and choose your monthly tenant export
+2. SonicSaaS parses the file (seat counts come from the `Users` column) and builds the preview
+
+Only **paid, active** tenants are pushed. Proof-of-concept tenants show as **Skipped**, and expired tenants are excluded entirely.
+
+## Step 3: Review the preview
+
+Each row is classified so you can see exactly what will happen before anything is written:
+
+| Status | Meaning | Action on push |
+|---|---|---|
+| **Ready** | Seat count differs from ConnectWise | Quantity updated (checked by default) |
+| **No change** | Count already matches | Nothing — hidden by default |
+| **No addition** | Tenant has seats but no billing line exists | Optionally **create** a new addition (opt-in) |
+| **Orphaned** | ConnectWise still bills this tenant, but it's **absent from this export** | Optionally **cancel** the addition (opt-in) — see below |
+| **Unmatched / Ambiguous** | No confident ConnectWise company match | Pick a company from the row |
+| **License unmapped** | The license tier isn't mapped to a product | Add the mapping in Setup, or exclude it |
+| **Multiple additions** | More than one active line bills this product | Resolve the duplicate in ConnectWise |
+
+Current quantities come from the last agreement scan; the push re-checks the **live** ConnectWise value before every change.
+
+## Bidirectional true-up: cancelling orphaned additions
+
+The seat sync doesn't just add and increase — it also catches billing that should **stop**. When a tenant that you previously billed is **no longer in this month's export** (they've dropped Avanan, or dropped a tier), its ConnectWise addition would otherwise keep billing forever. SonicSaaS flags these as **Orphaned** and offers to cancel them, symmetric to how **No addition** rows offer to create.
+
+- Orphaned rows are **opt-in** — the cancel checkbox is unchecked by default, because removing a billing line is deliberate.
+- Cancelling sets the addition's **cancel date** in ConnectWise, so billing stops at the end of the current period. The line and its invoice history are **preserved**, and the change is **reversible** in ConnectWise.
+- Each cancel is re-verified live before it's written and recorded in the audit log.
+
+> **Safety:** if an export is empty or clearly incomplete, SonicSaaS **skips** orphan detection entirely, so a bad file can never mass-cancel your billing. Always confirm a tenant has genuinely dropped Avanan before cancelling — a tenant missing due to a partial export is a false positive you can simply leave unchecked.
+
+## Step 4: Push to ConnectWise
+
+Review the selected changes, then click **Push … changes to ConnectWise**. A confirmation summarises exactly what will happen — updates, creates, and cancels, including any decreases. Creates use catalog pricing effective today (first of next month if ConnectWise rejects today's date). The run is tracked as a single **Seat Sync** operation under **Operations**, with created / updated / cancelled / skipped / failed counts, and every change is written to the audit log.
+
+## Agreement types & multi-agreement clients
+
+If a client has several agreements, use **Agreement types** in the Setup panel to narrow which agreements the sync considers when matching and when creating or cancelling lines. Leave it empty to consider every agreement.
+
+## Troubleshooting
+
+> **A whole client shows as Orphaned unexpectedly.** They're absent from this month's export. Confirm they've genuinely dropped Avanan before cancelling — if the export was partial, leave the row unchecked and re-export.
+
+> **Rows stay "License unmapped".** The license tier in the CSV doesn't exactly match a saved mapping. Mappings are case-sensitive exact — add the tier as it appears in the export.
+
+> **"ConnectWise is not configured for this team".** Connect [ConnectWise](/integrations/connectwise) first (or ensure the parent team's configuration is inherited), then run an agreement scan.
+
+## Related
+
+- [ConnectWise PSA Integration](/integrations/connectwise) — connection, company sync, and agreements
+- [Adobe Seat Sync](/integrations/adobe) · [Duo Seat Sync](/integrations/duo) — the other seat-sync sources
+- [Integrations Overview](/integrations) — all available integrations
