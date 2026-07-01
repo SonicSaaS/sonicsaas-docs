@@ -143,8 +143,23 @@ After the first sync completes, walk this checklist to confirm the security role
 - **Location sync** — keep site and address data synchronized between platforms
 - **Ticket creation** — automatically create ConnectWise service tickets from device alerts, with deduplication
 - **Agreement scanning & migration** — view agreements and run product-mapping migrations with dry-run preview
+- **Seat-count sync** — true-up agreement addition quantities from Avanan, Adobe, and Duo, including cancelling additions for clients that dropped a product
 - **Time tracking** — post time entries and submit timesheets from SonicSaaS to the API member's ConnectWise timesheet
 - **Sales opportunities** *(roadmap)* — surface fleet-driven leads (firmware renewals, hardware refreshes) as ConnectWise opportunities
+
+## Seat-Count Sync
+
+Once ConnectWise is connected and an agreement scan has run, the **seat-sync** integrations keep your agreement addition quantities matched to what clients actually use — a monthly, preview-then-push true-up in **both directions**:
+
+- **Create** a billing line when a client has seats but no matching addition
+- **Update** the quantity when the seat count changed
+- **Cancel** an addition when a client has **dropped off** the source entirely — so you stop billing for a product they no longer use
+
+Cancelling sets the addition's cancel date (billing stops at period end; the line and its invoice history are preserved, and it's reversible in ConnectWise), is **opt-in** and confirm-gated, and every change is re-verified live and written to the audit log. Each source has its own setup guide:
+
+- [Avanan Seat Sync](/integrations/avanan) — email-security tenants (CSV upload)
+- [Adobe Seat Sync](/integrations/adobe) — Acrobat / Creative Cloud (Admin Console export)
+- [Duo Seat Sync](/integrations/duo) — MFA subaccounts (API pull)
 
 ## Partner Client ID
 
@@ -160,4 +175,5 @@ Every ConnectWise API call from SonicSaaS includes a registered partner Client I
 
 ## Related
 
+- [Avanan](/integrations/avanan) · [Adobe](/integrations/adobe) · [Duo](/integrations/duo) — seat-count sync sources
 - [Integrations Overview](/integrations) — all available integrations

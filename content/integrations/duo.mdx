@@ -1,0 +1,75 @@
+---
+title: Duo Seat Sync
+description: Pull enrolled-user counts from your Duo subaccounts and true-up ConnectWise agreement addition quantities — create, update, and cancel additions from one preview.
+keywords: [Duo, MFA, seat sync, ConnectWise, agreement additions, billing true-up, enrolled users, subaccounts, orphaned additions]
+---
+
+# Duo Seat Sync
+
+Keep your ConnectWise MFA billing aligned with Duo. Instead of a monthly upload, SonicSaaS **pulls** enrolled-user counts directly from every Duo subaccount and reconciles them against your ConnectWise agreement additions — **creating** missing lines, **updating** seat counts, and **cancelling** additions for subaccounts that dropped off. Every change is previewed, and **nothing is written to ConnectWise until you press Push**.
+
+## Prerequisites
+
+- [ConnectWise](/integrations/connectwise) connected, with at least one agreement scan completed
+- [Duo](/integrations/duo) accounts API configured for your MSP parent account
+- Agreement-management permission (`psa:agreements.manage`) in SonicSaaS
+
+## How matching works
+
+SonicSaaS matches each **Duo subaccount** to a **ConnectWise company by name**. The first time a subaccount is matched, the choice is saved and reused every month — so keeping subaccount names aligned with their ConnectWise companies keeps auto-matching clean.
+
+Only **enrolled** users are counted (users who have completed Duo enrollment) — not every provisioned account.
+
+> **Pull, not upload.** The Duo API is called only when you press **Pull from Duo**. After that, the pulled data is cached in the browser, so fixing a company or license mapping **re-classifies the already-pulled data** without hitting the Duo API again.
+
+## Step 1: Map the Duo license
+
+Duo bills a **single** MFA license, so there's just one mapping to make: link the Duo MFA product to the ConnectWise catalog product that bills those seats.
+
+1. Go to **Integrations → Duo Seats** and open the **Setup** panel
+2. Under **License mappings**, the Duo license is pre-filled — pick the ConnectWise product and **Save mapping**
+
+> **Note:** until the license is mapped, every row stays blocked (**License unmapped**). You can also mark the Duo product **no-charge** to drop every row from the preview entirely.
+
+## Step 2: Pull & review the preview
+
+Click **Pull from Duo**. SonicSaaS crawls every subaccount, counts enrolled users, and classifies each row:
+
+| Status | Meaning | Action on push |
+|---|---|---|
+| **Ready** | Enrolled-user count differs from ConnectWise | Quantity updated (checked by default) |
+| **No change** | Count already matches | Nothing — hidden by default |
+| **No addition** | Subaccount has users but no billing line exists | Optionally **create** a new addition (opt-in) |
+| **Orphaned** | ConnectWise still bills this subaccount, but it's **absent from this pull** | Optionally **cancel** the addition (opt-in) — see below |
+| **Unmatched / Ambiguous** | No confident ConnectWise company match | Pick a company from the row |
+| **Multiple additions** | More than one active line bills this product | Resolve the duplicate in ConnectWise |
+
+Current quantities come from the last agreement scan; the push re-checks the **live** ConnectWise value before every change.
+
+## Bidirectional true-up: cancelling orphaned additions
+
+When a subaccount you previously billed **no longer appears in the pull** — the client offboarded Duo, or the subaccount was removed — its ConnectWise addition would otherwise keep billing forever. SonicSaaS flags these as **Orphaned** and offers to cancel them, symmetric to how **No addition** rows offer to create.
+
+- Orphaned rows are **opt-in** — the cancel checkbox is unchecked by default, because removing a billing line is deliberate.
+- Cancelling sets the addition's **cancel date** in ConnectWise: billing stops at period end, the line and its invoice history are **preserved**, and it's **reversible**.
+- Each cancel is re-verified live before writing and recorded in the audit log.
+
+> **Safety:** SonicSaaS **skips** orphan detection entirely when a pull returns no usable rows, so a failed pull can never mass-cancel your billing. Confirm a subaccount has genuinely offboarded before cancelling; a false positive from an incomplete pull is simply left unchecked.
+
+## Step 3: Push to ConnectWise
+
+Click **Push … changes to ConnectWise** and confirm. Updates, creates, and cancels ship together as a single tracked **Seat Sync** operation under **Operations**, with created / updated / cancelled / skipped / failed counts and a full audit trail.
+
+## Troubleshooting
+
+> **A subaccount shows as Orphaned unexpectedly.** It wasn't in the last pull. Confirm the client has genuinely offboarded Duo before cancelling — re-pull if the crawl was incomplete.
+
+> **Every row is "License unmapped".** The single Duo license isn't mapped yet. Map it once in Setup; the mapping is remembered.
+
+> **"ConnectWise is not configured for this team".** Connect [ConnectWise](/integrations/connectwise) first, then run an agreement scan.
+
+## Related
+
+- [ConnectWise PSA Integration](/integrations/connectwise) — connection, company sync, and agreements
+- [Avanan Seat Sync](/integrations/avanan) · [Adobe Seat Sync](/integrations/adobe) — the other seat-sync sources
+- [Integrations Overview](/integrations) — all available integrations
