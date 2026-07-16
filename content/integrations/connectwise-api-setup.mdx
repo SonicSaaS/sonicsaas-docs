@@ -1,0 +1,142 @@
+---
+title: ConnectWise API Setup & Permissions
+description: Technical guide for ConnectWise administrators setting up API credentials and permissions for SonicSaaS integration, including troubleshooting common permission issues.
+keywords: [ConnectWise, API, security role, permissions, integration setup, API member]
+---
+
+# ConnectWise API Setup & Permissions
+
+This guide is for **ConnectWise administrators** who are configuring API access for the SonicSaaS integration. It assumes you've already completed [Step 1–3 of the ConnectWise PSA Integration guide](/integrations/connectwise) (creating the security role, API member, and generating keys). This page covers the specific API permissions required and troubleshooting when permissions are insufficient.
+
+## Required API Permissions Matrix
+
+When you create the **SonicSaaS Integration** security role, the following endpoints must have **explicit permission grants**. This matrix is more detailed than the high-level summary in the main integration guide and should be used as a technical reference when provisioning the role:
+
+### Company Management
+
+| Endpoint | Method | Permission | Why SonicSaaS needs it | Status |
+|---|---|---|---|---|
+| `/company/companies/{id}` | `PATCH` | Edit Company Maintenance | Update company status classifications | ✅ Working |
+| `/company/companies/{id}/typeassociations` | `POST` | Create Company Maintenance | Add type classifications to companies | ✅ Working |
+| `/company/companies/{id}/typeassociations/{id}` | `DELETE` | Delete Company Maintenance | Remove type classifications from companies | ⚠️ **Required but often missing** — see [Troubleshooting](#troubleshooting) |
+
+### Reference Data (for dropdown menus in SonicSaaS)
+
+| Endpoint | Method | Permission | Why SonicSaaS needs it |
+|---|---|---|---|
+| `/company/companies/statuses` | `GET` | Inquire Company Maintenance | Fetch available company status options for the UI dropdown |
+| `/company/companies/types` | `GET` | Inquire Company Maintenance | Fetch available company type options for the UI dropdown |
+
+### All Other Permissions
+
+Refer to the [Step 1 permission matrix in the main ConnectWise PSA Integration guide](/integrations/connectwise#step-1-create-a-security-role) — those permissions remain unchanged and must be granted exactly as specified.
+
+## Known Permission Issues
+
+### Type Classification (Status & Type) Features
+
+**Symptom:** The company detail page in SonicSaaS shows "Status" and "Type" fields read-only (gray, no edit controls), or changing them fails with a 403 error:
+```
+Failed to update ConnectWise: ConnectWise API 403: You do not have security permission to perform this action
+```
+
+**Root Cause:** One or more of these endpoints lack explicit permission in the API member's security role:
+- `PATCH /company/companies/{id}` (for status changes) — **often present**
+- `POST /company/companies/{id}/typeassociations` (for adding types) — **often missing**
+- `DELETE /company/companies/{id}/typeassociations/{id}` (for removing types) — **often missing**
+
+**Fix:**
+
+1. In ConnectWise Manage, navigate to **System > Security Roles**
+2. Open the **SonicSaaS Integration** role
+3. In the **Companies** section, verify that **Company Maintenance** has:
+   - ✅ **Edit** permission (grants PATCH access)
+   - ✅ **Add** permission (grants POST to typeassociations)
+   - ✅ **Delete** permission (grants DELETE on typeassociations)
+4. Click **Save**
+5. In SonicSaaS, navigate to **Integrations > ConnectWise** and click **Test Connection** to re-verify permissions
+
+> **Note:** These three permissions are separate in ConnectWise's permission model. An API member may have Edit but not Delete, for example. The SonicSaaS feature requires all three for full functionality.
+
+### Type Removal Shows "Success" but Types Don't Update
+
+**Symptom:** In SonicSaaS, clicking the "×" button on a type shows "Type removed" but the type still appears on the company page and remains in ConnectWise.
+
+**Root Cause:** The `DELETE /company/companies/{id}/typeassociations/{id}` permission is missing or restricted in the API member's role.
+
+**Fix:** Follow the [Type Classification](#type-classification-status--type-features) steps above to add **Delete** permission to Company Maintenance.
+
+### Types Field Shows Empty Despite ConnectWise Assignments
+
+**Symptom:** A company in ConnectWise has one or more types assigned, but the **Type** field in SonicSaaS shows empty or "No types assigned."
+
+**Root Cause:** The company sync is configured to filter types (see `includeTypeIds`/`excludeTypeIds` in sync settings), or the sync has not run since types were assigned in ConnectWise.
+
+**Fix:**
+
+1. In SonicSaaS, navigate to **Integrations > ConnectWise**
+2. Check the **Sync Filters** section:
+   - If `Include Type IDs` is set, only those types will sync. Verify the company's ConnectWise types are in this list.
+   - If `Exclude Type IDs` is set, verify the company's types are not in this exclusion list.
+3. Run a manual **Sync** via the integration page
+4. Wait for the sync to complete and refresh the company detail page
+
+If filtering is intentional, this behavior is expected — only the non-excluded types will appear in SonicSaaS.
+
+## API Field Name Clarification
+
+When working with ConnectWise's REST API directly (or reviewing connector logs), note these field name distinctions:
+
+| Field | Location | Meaning | Read/Write |
+|---|---|---|---|
+| `status` | `/company/companies/{id}` (PATCH field) | Single-select company status (Active, Inactive, Prospect, etc.) | Write via PATCH |
+| `types` | `/company/companies/{id}` (PATCH field) | Array of type objects for a company | Read-only (see note below) |
+| `typeassociations` | `/company/companies/{id}/typeassociations` (endpoint) | Dedicated endpoint for managing type assignments | Write via POST/DELETE |
+
+> **Important:** ConnectWise enforces a constraint: `types` can only be set when **creating** a new company (POST to `/company/companies`). For existing companies, types **must** be managed via the `/typeassociations` endpoint using POST (add) and DELETE (remove). Attempting to PATCH the `types` field on an existing company will return a 400 error (`typeIds can only be used when creating a new company`).
+
+## Verification Checklist
+
+After updating the security role and API member, verify integration health:
+
+- [ ] **Security Role:** Open **System > Security Roles > SonicSaaS Integration**
+  - [ ] **Companies > Company Maintenance:** Edit, Add, **Delete**, Inquire all enabled
+  - [ ] Click **Save**
+- [ ] **API Member is Active:** Go to **System > Members > API Members > SonicSaaS**
+  - [ ] Status shows **Active**
+  - [ ] Role is set to **SonicSaaS Integration**
+- [ ] **SonicSaaS Connection Test:** In SonicSaaS, **Integrations > ConnectWise**
+  - [ ] Click **Test Connection**
+  - [ ] Confirm: "ConnectWise connection successful" + version number displayed
+- [ ] **Sync Test:** Click **Sync** to pull the latest data
+  - [ ] Confirm sync completes without 403 errors
+  - [ ] On a CW-linked company, confirm **Status** field is visible and editable
+  - [ ] Confirm **Type** field is visible; try adding a type, confirm it persists
+
+If all steps pass, the integration is properly configured.
+
+## Common Error Messages & Resolutions
+
+| Error | Cause | Resolution |
+|---|---|---|
+| `ConnectWise API 403: You do not have security permission to perform this action` | API member's security role lacks the required permission for this endpoint | Verify the permission matrix above; add missing permissions to the role; re-test connection |
+| `typeIds can only be used when creating a new company` | Code attempted to PATCH the `types` field on an existing company | This is a ConnectWise constraint. Use the `/typeassociations` endpoint instead. SonicSaaS handles this correctly; if you see this, contact support. |
+| `Connection test failed: Invalid credentials` | Public Key or Private Key is incorrect or has been revoked | Regenerate API keys in ConnectWise (**System > Members > API Members > {member} > API Keys**) and update SonicSaaS (**Integrations > ConnectWise**) |
+| `Connection test failed: Host unreachable` | Server URL is incorrect or network access is blocked | Verify **Server Region** / **Server URL** in SonicSaaS matches your ConnectWise login URL |
+
+## Questions or Escalation
+
+If you've verified the checklist above and are still experiencing issues:
+
+1. **Collect logs:**
+   - From ConnectWise: **System > Audit Trail**, filter for the API member's actions in the last hour
+   - From SonicSaaS: Share the integration test result + any error toasts from the company detail page
+
+2. **Contact SonicSaaS support** with:
+   - Symptoms (what you're trying to do and what happens)
+   - Verification checklist results (which steps passed, which failed)
+   - Logs from step 1
+
+3. **If directed to ConnectWise support:**
+   - Ask: "Can you confirm that the `SonicSaaS` API member has POST and DELETE permissions on `/company/companies/{id}/typeassociations`?"
+   - Share the [API Permissions Matrix](#required-api-permissions-matrix) above as reference
