@@ -1,0 +1,95 @@
+---
+title: Copilot Readiness
+description: How the Copilot Readiness grade works — the seven areas assessed, the two scores, and what pass, warning, fail and not measurable each mean.
+keywords: [Copilot readiness, grade, score, assessment, seven pillars, Microsoft 365 Copilot, oversharing, AI readiness]
+---
+
+# Copilot Readiness
+
+Copilot Readiness answers one question: **if we switched Microsoft 365 Copilot on tomorrow, would it
+help — or would it surface things it shouldn't?**
+
+Copilot has no permissions of its own. It sees exactly what the person using it can already see. So
+turning it on doesn't create new access; it makes existing access dramatically easier to use. A
+document that was technically open to the whole company but buried five folders deep in a site nobody
+visits is, after Copilot, one plain-English question away.
+
+That is why readiness is about how your tenant is configured, and why it is worth checking **before**
+you buy licences rather than after.
+
+## The two scores
+
+You'll see up to two numbers. They answer different questions.
+
+| Score | What it answers | When you see it |
+| --- | --- | --- |
+| **Readiness** | "If we bought Copilot, would we be ready for it?" | Always |
+| **Full score** | "Now that we have Copilot, how are we doing overall?" | Once Copilot licences are present |
+
+**Readiness** deliberately ignores whether you own Copilot today. It skips the two checks about owning
+licences and skips usage entirely, so an organisation with no Copilot at all still gets an honest
+number. This is the pre-purchase number, and its weak areas are the fix-before-you-buy list.
+
+**Full score** includes licensing and rollout. It only appears once Copilot licences exist, because
+grading rollout for an organisation that hasn't bought anything would be meaningless.
+
+If too little could be measured, Readiness is withheld rather than guessed at — you'll see a note
+about what access is missing instead of a misleading grade.
+
+## The seven areas
+
+Each area carries a weight. They add up to 100.
+
+| Area | Weight | What it covers |
+| --- | --- | --- |
+| [Identity & Access](/m365/copilot-identity) | 25 | How well sign-ins are protected |
+| [Sensitivity Labels](/m365/copilot-sensitivity-labels) | 20 | Marking sensitive documents |
+| [Licensing](/m365/copilot-licensing) | 15 | The subscriptions Copilot needs |
+| [Access Governance](/m365/copilot-access-governance) | 15 | How widely files are shared |
+| [Data Loss Prevention](/m365/copilot-dlp) | 10 | Rules that stop information leaving |
+| [Audit & Monitoring](/m365/copilot-audit) | 10 | Whether activity is recorded |
+| [Deployment & Adoption](/m365/copilot-adoption) | 5 | Whether licences are being used |
+
+Identity and Access Governance together carry 40 of the 100 points, and that is deliberate. They are
+the two halves of "what can a Copilot prompt actually reach" — who can sign in as whom, and how widely
+your content is shared. Oversharing is the single most common reason a Copilot rollout goes badly.
+
+## What each check result means
+
+| Result | Meaning |
+| --- | --- |
+| **Pass** | The setting is where it should be. |
+| **Warning** | Not wrong, but not the recommended position either. Worth a look. |
+| **Fail** | A genuine gap that will affect a Copilot rollout. |
+| **Not measurable** | We could not read this setting. It is **not** counted as a pass or a fail. |
+
+That last row matters. A setting we cannot read is never quietly scored as "fine". It is excluded from
+the grade entirely and lowers a separate **confidence** figure, shown as something like *18/22 signals*.
+A high grade with low confidence means "what we could see looks good, but we couldn't see everything."
+
+### Why something might not be measurable
+
+Usually because SonicSaaS has not been granted the access needed to read that particular area. The
+report tells you which permission is missing, and the fix is a one-time change on your side. Some
+checks are marked **blind spot** instead, meaning no available permission can read them today — those
+are excluded from the confidence figure too, so they don't count against you forever.
+
+## What this assessment does not cover
+
+Worth being straight about the limits:
+
+- **It reads settings, not content.** It can tell you external sharing is switched on tenant-wide. It
+  cannot tell you which specific documents are overshared — that needs a full content scan.
+- **It cannot measure how much of your content is actually labelled.** It can tell you labels exist and
+  are published; measuring coverage across every file is a separate exercise.
+- **It does not assess training or process.** Whether your people know what to put into an AI assistant
+  is a real risk, and not one any automated check can grade.
+
+These are called out in the report rather than silently scored, so the grade stays honest.
+
+## Related
+
+- [Licensing](/m365/copilot-licensing) — what you need to buy, and what you may already have
+- [Access Governance](/m365/copilot-access-governance) — the oversharing checks
+- [Microsoft: Microsoft 365 Copilot requirements](https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-requirements) — Microsoft's own prerequisites
+- [Microsoft: data, privacy and security for Microsoft 365 Copilot](https://learn.microsoft.com/en-us/copilot/microsoft-365/microsoft-365-copilot-privacy) — how Copilot handles your data

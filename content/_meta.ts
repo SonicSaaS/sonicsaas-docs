@@ -19,6 +19,7 @@ export default {
   benchmark: 'Benchmark',
   compatibility: 'Compatibility',
   compliance: 'Compliance',
+  m365: 'Microsoft 365',
   integrations: 'Integrations',
   api: 'API Reference',
   settings: 'Settings',

@@ -1,0 +1,133 @@
+---
+title: Identity & Access
+description: The six identity checks in Copilot Readiness — user and admin MFA, legacy authentication, app consent, Global Administrator hygiene, and guest accounts.
+keywords: [MFA, multi-factor authentication, Conditional Access, Security Defaults, legacy authentication, app consent, Global Administrator, guest accounts, Entra ID]
+---
+
+# Identity & Access
+
+**Weight: 25 of 100 — the largest single area.**
+
+Copilot answers as the person asking. It has no permissions of its own; it reaches exactly what that
+user's account can reach. So the question "what can Copilot see?" is really the question "who can sign
+in as whom, and what does that account have access to?"
+
+That is why identity carries more weight than any other area. If an account is compromised, Copilot
+becomes an extremely efficient tool for finding whatever that account could open.
+
+## User MFA registration [#identity-mfa-registered]
+
+**What this checks** — the share of your active, licensed users who have registered a multi-factor
+authentication method. Multi-factor authentication (MFA) means signing in needs something beyond a
+password, usually an approval on a phone.
+
+**Why it matters** — passwords alone are routinely stolen through phishing. MFA is the single most
+effective control against account takeover, and account takeover is the realistic route to Copilot
+being misused.
+
+**What "ready" looks like** — 95% or more registered is a pass, 80% or more is a warning, and below
+that is a fail. The figure counts only enabled, licensed staff accounts — guests and dormant
+unlicensed accounts are excluded, because including them makes a well-run tenant look far worse than
+it really is.
+
+**How to fix it** — roll MFA registration out to the users who have not completed it. The Entra admin
+centre's authentication methods activity report shows exactly who is outstanding.
+
+**Microsoft's guidance** — [Authentication methods activity report](https://learn.microsoft.com/en-us/entra/identity/authentication/howto-authentication-methods-activity)
+
+## Admin MFA enforced [#identity-admin-mfa]
+
+**What this checks** — whether multi-factor authentication is actually *required* for administrator
+accounts, either through Security Defaults or through an enabled Conditional Access policy.
+
+**Why it matters** — registering an MFA method and being required to use it are different things. An
+administrator account has the widest possible access, so it is the highest-value target in the tenant.
+
+**What "ready" looks like** — Security Defaults switched on, or a Conditional Access policy enforcing
+MFA for admin roles. A policy that exists but is only in report-only mode counts as a warning, because
+report-only mode logs what *would* have happened without actually blocking anything.
+
+**How to fix it** — smaller organisations can switch on Security Defaults, which requires MFA for
+everyone. Organisations with Entra ID P1 should use a Conditional Access policy instead, which is more
+targeted. Set up emergency access accounts before enforcing anything, so a misconfigured policy cannot
+lock every administrator out of the tenant.
+
+**Microsoft's guidance** — [Security Defaults](https://learn.microsoft.com/en-us/entra/fundamentals/security-defaults) · [Conditional Access overview](https://learn.microsoft.com/en-us/entra/identity/conditional-access/overview)
+
+## Legacy authentication blocked [#identity-legacy-auth]
+
+**What this checks** — whether older sign-in protocols are blocked.
+
+**Why it matters** — legacy protocols predate modern security and **cannot perform multi-factor
+authentication**. If they are still allowed, an attacker with a stolen password can often use one to
+sign in and bypass your MFA entirely. Leaving them open undermines both checks above.
+
+**What "ready" looks like** — legacy authentication blocked tenant-wide.
+
+**How to fix it** — block it with a Conditional Access policy, or by switching on Security Defaults,
+which blocks it automatically. Check first for old devices, scanners or line-of-business applications
+still using these protocols, so you can move them before switching it off.
+
+**Microsoft's guidance** — [Block legacy authentication](https://learn.microsoft.com/en-us/entra/identity/conditional-access/block-legacy-authentication)
+
+## App consent restricted [#identity-consent]
+
+**What this checks** — whether ordinary users are allowed to grant third-party applications access to
+company data on their own.
+
+**Why it matters** — this is the mechanism behind consent phishing. A user is sent a legitimate-looking
+"sign in with Microsoft" prompt, approves it, and a third-party application quietly gains ongoing
+access to their mail and files — without ever needing their password, and unaffected by MFA. Copilot
+raises the stakes, because the data such an app can reach is the same data Copilot makes easy to find.
+
+**What "ready" looks like** — users cannot consent freely. Either consent is restricted to a vetted set
+of low-risk permissions, or it is turned off and routed through an administrator approval workflow.
+
+**How to fix it** — in the Entra admin centre, review **Enterprise applications → Consent and
+permissions**. Microsoft's recommended setting allows consent only for low-risk permissions from
+verified publishers. Turning consent off entirely without an approval workflow tends to generate
+helpdesk tickets, so enable admin consent requests at the same time.
+
+**Microsoft's guidance** — [Configure how users consent to applications](https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/configure-user-consent)
+
+## Global Administrator hygiene [#identity-global-admins]
+
+**What this checks** — whether every Global Administrator account is protected by multi-factor
+authentication.
+
+**Why it matters** — Global Administrator is the most powerful role in Microsoft 365. An unprotected
+one is the shortest path to a full tenant compromise. Microsoft recommends keeping the number of
+Global Administrators small and protecting every one of them.
+
+**What "ready" looks like** — zero unprotected Global Administrators. Any unprotected admin is a fail
+rather than a warning: there is no acceptable number above zero.
+
+**How to fix it** — identify the accounts, enforce MFA on each, and take the opportunity to reduce the
+count. Most people holding Global Administrator only need a narrower role for what they actually do.
+
+**Microsoft's guidance** — [Best practices for Microsoft Entra roles](https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/best-practices)
+
+## Guest access hygiene [#identity-guests]
+
+**What this checks** — guest accounts in the tenant, and in particular whether any of them hold paid
+licences.
+
+**Why it matters** — guests are external people: clients, contractors, partners invited into your
+tenant. Each one is another identity that can reach some of your content, and every guest account is a
+door you did not create and may not be tracking. A guest holding a paid licence is doubly worth
+reviewing — it is unusual, it costs money, and it usually means the account was set up in a way nobody
+intended.
+
+**What "ready" looks like** — no guests holding paid licences. The report also shows the total guest
+count, so you can see the scale of external access at a glance.
+
+**How to fix it** — review the guest list and remove access for people whose engagement has ended.
+Stale guest accounts accumulate quietly; a periodic review is the fix.
+
+**Microsoft's guidance** — [B2B collaboration overview](https://learn.microsoft.com/en-us/entra/external-id/what-is-b2b)
+
+## Related
+
+- [Access Governance](/m365/copilot-access-governance) — the other half of "what can a prompt reach"
+- [Licensing](/m365/copilot-licensing) — Entra ID P1 is what unlocks Conditional Access
+- [Copilot Readiness](/m365/copilot-readiness) — how these checks roll up into a grade

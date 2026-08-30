@@ -1,0 +1,106 @@
+---
+title: Sensitivity Labels
+description: The four sensitivity label checks in Copilot Readiness — labels published, encryption-applying labels, container labels for sites and Teams, and a default labelling policy.
+keywords: [sensitivity labels, Microsoft Purview, information protection, encryption, container labels, default label policy, data classification]
+---
+
+# Sensitivity Labels
+
+**Weight: 20 of 100.**
+
+A sensitivity label is a tag on a document or email — *Confidential*, *Internal*, *Public* — that can
+carry protection with it. Labels are how Microsoft 365 knows which of your content is sensitive.
+
+This matters for Copilot for one specific reason: **Copilot honours labels.** When it draws on a
+labelled document to answer a question, the protection travels with the answer. Where a label applies
+encryption, content the user cannot decrypt cannot be summarised back to them at all.
+
+Without labels, Copilot has no way to tell your board minutes from your lunch menu. It treats
+everything the user can open as equally fair game.
+
+> **Most smaller organisations have no labels at all.** If that is you, these checks will fail, and
+> that is the honest answer rather than a criticism. Labelling is a project, not a switch. It is also
+> the highest-value preparation you can do before a Copilot rollout.
+
+## Sensitivity labels published [#labels-published]
+
+**What this checks** — whether any sensitivity labels have been published for users to apply.
+
+**Why it matters** — this is the foundation. A label that has been created but not published to anyone
+does not exist as far as your users are concerned. With no published labels, nothing in your tenant is
+classified, and every later protection has nothing to act on.
+
+**What "ready" looks like** — at least one published label. This is the headline check for this area,
+and having none is a fail.
+
+**How to fix it** — in the Microsoft Purview portal, create labels under **Information protection →
+Labels**, then publish them with a label policy. Start small: three or four labels people can actually
+tell apart beats a taxonomy of fifteen nobody uses.
+
+**Microsoft's guidance** — [Create and configure sensitivity labels](https://learn.microsoft.com/en-us/purview/create-sensitivity-labels)
+
+## Encryption-applying label exists [#labels-encryption]
+
+**What this checks** — whether at least one of your published labels applies encryption.
+
+**Why it matters** — this is the strongest control available for Copilot. Labels that only mark
+content are useful for awareness, but labels that *encrypt* actually enforce something: if a user
+does not have rights to decrypt a document, Copilot cannot use its contents in an answer for them.
+It is the difference between a sign on a door and a lock.
+
+**What "ready" looks like** — at least one published label that applies encryption, typically your
+most restrictive tier.
+
+**How to fix it** — edit a label in the Purview portal and enable encryption under its protection
+settings. Test with a small group first: encryption genuinely restricts access, and that is the point,
+but it can surprise people who were used to sharing a document freely.
+
+**Microsoft's guidance** — [Restrict access to content with sensitivity labels](https://learn.microsoft.com/en-us/purview/encryption-sensitivity-labels)
+
+## Container-scoped labels [#labels-container]
+
+**What this checks** — whether you have labels that apply to *containers* — SharePoint sites,
+Microsoft 365 Groups and Teams — rather than only to individual files.
+
+**Why it matters** — labelling files one at a time relies on every person making the right call every
+time. A container label sets the rules for a whole workspace: who can join, whether guests are allowed,
+whether content can be shared externally. That is a far more reliable way to keep a sensitive project
+site from quietly becoming visible to the whole organisation — which is exactly the situation Copilot
+makes visible.
+
+**What "ready" looks like** — at least one label scoped to sites and groups.
+
+**How to fix it** — when creating or editing a label in the Purview portal, include **Groups & sites**
+in its scope, then configure the privacy and external-sharing settings it should enforce.
+
+**Microsoft's guidance** — [Use sensitivity labels with Teams, Groups and SharePoint sites](https://learn.microsoft.com/en-us/purview/sensitivity-labels-teams-groups-sites)
+
+## Default labelling policy [#labels-default-policy]
+
+**What this checks** — whether a label policy applies a default label to new content.
+
+**Why it matters** — without a default, every document starts unlabelled and stays that way unless
+someone remembers to act. In practice most people do not. A default label means new content is
+classified from the moment it is created, which turns labelling from a habit you have to enforce into
+something that happens on its own.
+
+**What "ready" looks like** — a published label policy with a default label configured.
+
+**How to fix it** — edit your label policy in the Purview portal and set a default label. Choose a
+sensible baseline such as *Internal* rather than your most restrictive tier — a default that is too
+strict trains people to downgrade labels reflexively, which is worse than no default at all.
+
+**Microsoft's guidance** — [Create and configure sensitivity labels and their policies](https://learn.microsoft.com/en-us/purview/create-sensitivity-labels)
+
+## If these show "not measurable"
+
+Reading label configuration requires a compliance role in the delegated administration relationship
+between your IT provider and your tenant. If these checks are not measurable, that permission has not
+been granted yet — the report names what is missing. It is a one-time change, and it does not give
+anyone access to the contents of your documents.
+
+## Related
+
+- [Data Loss Prevention](/m365/copilot-dlp) — rules that act on the labels you create
+- [Access Governance](/m365/copilot-access-governance) — the sharing settings container labels control
+- [Microsoft: data security for Copilot and generative AI](https://learn.microsoft.com/en-us/purview/ai-microsoft-purview) — how Purview protections apply to AI
