@@ -121,7 +121,7 @@ If all steps pass, the integration is properly configured.
 |---|---|---|
 | `ConnectWise API 403: You do not have security permission to perform this action` | API member's security role lacks the required permission for this endpoint | Verify the permission matrix above; add missing permissions to the role; re-test connection |
 | `typeIds can only be used when creating a new company` | Code attempted to PATCH the `types` field on an existing company | This is a ConnectWise constraint. Use the `/typeassociations` endpoint instead. SonicSaaS handles this correctly; if you see this, contact support. |
-| `Connection test failed: Invalid credentials` | Public Key or Private Key is incorrect or has been revoked | Regenerate API keys in ConnectWise (**System > Members > API Members > {member} > API Keys**) and update SonicSaaS (**Integrations > ConnectWise**) |
+| `Connection test failed: Invalid credentials` | Public Key or Private Key is incorrect or has been revoked | Regenerate API keys in ConnectWise (**System > Members > API Members > `{member}` > API Keys**) and update SonicSaaS (**Integrations > ConnectWise**) |
 | `Connection test failed: Host unreachable` | Server URL is incorrect or network access is blocked | Verify **Server Region** / **Server URL** in SonicSaaS matches your ConnectWise login URL |
 
 ## Questions or Escalation
