@@ -62,10 +62,17 @@ your content is shared. Oversharing is the single most common reason a Copilot r
 | **Warning** | Not wrong, but not the recommended position either. Worth a look. |
 | **Fail** | A genuine gap that will affect a Copilot rollout. |
 | **Not measurable** | We could not read this setting. It is **not** counted as a pass or a fail. |
+| **Not scored** | We read it fine, and it is shown for context — but it deliberately does not affect the grade. |
 
-That last row matters. A setting we cannot read is never quietly scored as "fine". It is excluded from
-the grade entirely and lowers a separate **confidence** figure, shown as something like *18/22 signals*.
-A high grade with low confidence means "what we could see looks good, but we couldn't see everything."
+The last two rows matter, and they are different things.
+
+A setting we **cannot read** is never quietly scored as "fine". It is excluded from the grade entirely
+and lowers a separate **confidence** figure, shown as something like *18/22 signals*. A high grade with
+low confidence means "what we could see looks good, but we couldn't see everything."
+
+A **not scored** check is one we read perfectly well but chose not to grade — because it reports
+something you cannot act on, or because grading it would penalise you twice for the same underlying
+fact. [Purview compliance tier](/m365/copilot-licensing#licensing-purview) is the current example.
 
 ### Why something might not be measurable
 

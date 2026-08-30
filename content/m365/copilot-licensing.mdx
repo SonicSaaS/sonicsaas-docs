@@ -83,20 +83,33 @@ can be bought as a standalone add-on.
 
 ## Purview compliance tier [#licensing-purview]
 
-**What this checks** — whether the tenant has E5-grade compliance licensing (Microsoft Purview).
+> **This one is context, not a score.** It is shown on the report marked **not scored**, and it does
+> not affect your grade either way. It is here to tell you which recommendations elsewhere in this
+> report you are currently able to act on — not to mark you down for a purchasing decision.
 
-**Why it matters** — Purview is where sensitivity labels and data loss prevention rules live. The basics
-are available at lower tiers, but the capabilities that matter most for Copilot — automatic labelling,
-the full data loss prevention feature set, and longer audit retention — are E5-grade features. This
-check is not saying you must buy E5. It is telling you which of the recommendations elsewhere in this
-report you are currently able to act on.
+**What this checks** — which Microsoft Purview compliance tier the tenant holds.
 
-**What "ready" looks like** — E5-grade compliance licensing present, whether through Microsoft 365 E5 or
-the standalone E5 Compliance add-on.
+**Why it matters** — Purview is where sensitivity labels and data loss prevention rules live. The
+important thing to understand is that **the basics are not E5-only**. Microsoft 365 Business Premium and
+E3 both include manually applied sensitivity labels — including labels that apply encryption — and DLP
+policies. Those cover most of what this report recommends.
 
-**How to fix it** — if you do not have it, focus on what your current tier *does* allow. Manually applied
-sensitivity labels and basic data loss prevention policies are available well below E5 and address most
-of the risk. Treat E5 as an option to weigh, not a prerequisite.
+What E5 adds is automation and scale: labels applied automatically rather than by hand, the full DLP
+feature set, and a longer audit retention window.
+
+**What you will see** — E5-grade compliance licensing present, or the E3 / Business tier. Neither is a
+failure. If you are on E3 or Business Premium, read it as "manual labelling and DLP are available to
+me; automatic labelling is not".
+
+**How to act on it** — focus on what your current tier allows. Publishing a small set of sensitivity
+labels and one or two DLP policies is available well below E5 and addresses most of the exposure.
+Treat E5 as an option to weigh once you have done that, not as a prerequisite for starting.
+
+**Why it is not scored** — audit retention is the one consequence of this tier that has a real
+operational effect, and that is already graded separately under
+[Audit & Monitoring](/m365/copilot-audit#audit-retention). Scoring the tier here as well meant a
+non-E5 tenant lost points twice in two different areas for a single purchasing decision, with no
+configuration change able to recover either. So the tier is reported, and scored once.
 
 **Microsoft's guidance** — [Learn about sensitivity labels](https://learn.microsoft.com/en-us/purview/sensitivity-labels) · [Learn about data loss prevention](https://learn.microsoft.com/en-us/purview/dlp-learn-about-dlp)
 

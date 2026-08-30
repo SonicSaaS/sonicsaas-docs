@@ -109,22 +109,34 @@ count. Most people holding Global Administrator only need a narrower role for wh
 
 ## Guest access hygiene [#identity-guests]
 
-**What this checks** — guest accounts in the tenant, and in particular whether any of them hold paid
-licences.
+**What this checks** — guest accounts in your tenant: how many have gone **stale** (no recent sign-in),
+and whether any hold a paid licence.
 
 **Why it matters** — guests are external people: clients, contractors, partners invited into your
 tenant. Each one is another identity that can reach some of your content, and every guest account is a
-door you did not create and may not be tracking. A guest holding a paid licence is doubly worth
-reviewing — it is unusual, it costs money, and it usually means the account was set up in a way nobody
-intended.
+door you did not create and may not be tracking.
 
-**What "ready" looks like** — no guests holding paid licences. The report also shows the total guest
-count, so you can see the scale of external access at a glance.
+Stale guests are the ones that matter most for Copilot. A contractor whose project finished two years
+ago usually still has an active account, and that account still resolves against every site and
+document it was ever given. Nobody notices, because nobody was going looking. Copilot changes that: it
+searches everything an identity can reach, and it does not care how long ago the engagement ended.
+
+A guest holding a paid licence is worth reviewing for a different reason — it is unusual, it costs
+money every month, and it usually means the account was set up in a way nobody intended.
+
+**What "ready" looks like** — no stale guests and no guests holding paid licences. The report shows the
+total guest count alongside both figures, so you can see the scale of external access at a glance.
 
 **How to fix it** — review the guest list and remove access for people whose engagement has ended.
-Stale guest accounts accumulate quietly; a periodic review is the fix.
+Stale guest accounts accumulate quietly, so a scheduled review beats a one-off clear-out. Microsoft
+Entra access reviews can automate the recurring part.
 
-**Microsoft's guidance** — [B2B collaboration overview](https://learn.microsoft.com/en-us/entra/external-id/what-is-b2b)
+**If this shows "not measurable"** — identifying a stale guest needs sign-in activity, and Microsoft
+only records that with Entra ID P1 or P2. Without it we can see your guests but not when they last
+signed in, so we report this as unmeasurable rather than assume everything is fine. Tenants with
+Entra P1 or above are unaffected.
+
+**Microsoft's guidance** — [B2B collaboration overview](https://learn.microsoft.com/en-us/entra/external-id/what-is-b2b) · [Microsoft Entra access reviews](https://learn.microsoft.com/en-us/entra/id-governance/access-reviews-overview)
 
 ## Related
 
