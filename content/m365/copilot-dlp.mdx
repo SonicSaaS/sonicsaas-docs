@@ -1,0 +1,73 @@
+---
+title: Data Loss Prevention
+description: The two data loss prevention checks in Copilot Readiness — whether any DLP policy is enabled, and whether one covers the Microsoft 365 Copilot location.
+keywords: [DLP, data loss prevention, Microsoft Purview, Copilot location, sensitive information, policy, compliance]
+---
+
+# Data Loss Prevention
+
+**Weight: 10 of 100.**
+
+Data loss prevention (DLP) is a set of rules that watch for sensitive information — card numbers,
+national insurance numbers, health records, anything you define — and act when someone tries to move
+it somewhere it should not go. The action might be a warning to the user, a block, or an alert to your
+security team.
+
+For Copilot, DLP does something specific: Microsoft provides a **Microsoft 365 Copilot location**, so
+a policy can govern what Copilot is allowed to draw on and what it may return in an answer.
+
+## DLP policy exists [#dlp-any-policy]
+
+**What this checks** — whether any data loss prevention policy is enabled anywhere in the tenant.
+
+**Why it matters** — this is the baseline. An organisation with no DLP policy at all has nothing
+watching for sensitive information moving out through email, Teams, or a shared file — with or without
+Copilot in the picture. Copilot does not create this risk, but it does make the underlying content
+much easier to surface.
+
+**What "ready" looks like** — at least one enabled DLP policy.
+
+**How to fix it** — in the Microsoft Purview portal, go to **Data loss prevention → Policies** and
+create one. Microsoft provides templates for common regulations, which is a far easier starting point
+than building rules from scratch. Run a new policy in test mode first so you can see what it *would*
+have caught before it starts blocking anything.
+
+**Microsoft's guidance** — [Learn about data loss prevention](https://learn.microsoft.com/en-us/purview/dlp-learn-about-dlp) · [Create and deploy a DLP policy](https://learn.microsoft.com/en-us/purview/dlp-create-deploy-policy)
+
+## DLP policy for Copilot [#dlp-copilot-policy]
+
+**What this checks** — whether an enabled DLP policy covers the Microsoft 365 Copilot location
+specifically.
+
+**Why it matters** — a DLP policy protecting email and SharePoint does not automatically govern
+Copilot. The Copilot location is what lets you say "do not let Copilot use content labelled
+Highly Confidential when it answers". Without it, Copilot can draw on sensitive material and
+paraphrase it into an answer, and none of your other DLP rules see it happen, because no file was
+sent anywhere.
+
+**What "ready" looks like** — an enabled policy that includes the Microsoft 365 Copilot location.
+Microsoft also provides a default policy for this location, so check what is already in place before
+building your own.
+
+**How to fix it** — create or edit a DLP policy in the Purview portal and include the Microsoft 365
+Copilot location. These policies typically act on sensitivity labels, so this check works best once
+[sensitivity labels](/m365/copilot-sensitivity-labels) are in place — the label marks the content, the
+DLP policy decides what Copilot may do with it.
+
+**Microsoft's guidance** — [DLP policy reference — the Microsoft 365 Copilot location](https://learn.microsoft.com/en-us/purview/dlp-policy-reference)
+
+## If these show "not measurable"
+
+Reading DLP configuration needs a higher level of access than reading labels — typically the Compliance
+Administrator role in the delegated administration relationship with your IT provider. It is common for
+a tenant to show labels correctly while DLP is unreadable.
+
+When that happens, these checks report **not measurable** and are excluded from the grade. They are
+never recorded as "no DLP policy" on the strength of a permission problem: an unreadable setting and a
+missing policy are very different things, and reporting one as the other would be misleading.
+
+## Related
+
+- [Sensitivity Labels](/m365/copilot-sensitivity-labels) — what most DLP rules act on
+- [Licensing](/m365/copilot-licensing) — the Purview tier that bounds which DLP features you can use
+- [Microsoft: data security and compliance for generative AI](https://learn.microsoft.com/en-us/purview/ai-microsoft-purview)

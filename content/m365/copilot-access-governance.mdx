@@ -1,0 +1,134 @@
+---
+title: Access Governance
+description: The five sharing checks in Copilot Readiness — external sharing level, default sharing link, external resharing, domain restrictions, and SharePoint legacy authentication.
+keywords: [oversharing, external sharing, SharePoint, OneDrive, sharing links, Anyone links, domain restrictions, access governance, Copilot]
+---
+
+# Access Governance
+
+**Weight: 15 of 100.**
+
+This area is about oversharing, and oversharing is the single most common reason a Copilot rollout goes
+wrong.
+
+Here is the pattern, and it is remarkably consistent. Over years, people share files to get work done —
+a link here, a site opened up there, a folder shared with "everyone in the organisation" because it was
+quicker than working out who actually needed it. None of it felt risky, because finding any given
+document meant knowing it existed and where to look.
+
+Copilot removes that friction entirely. It searches everything the user can reach and answers in plain
+English. Content that was *technically* accessible but *practically* buried becomes one question away.
+The classic example is an employee asking what their colleagues earn — and getting an answer, because a
+spreadsheet was shared far more widely than anyone remembered.
+
+**Copilot does not grant new access. It reveals the access you already had.**
+
+## External sharing level [#access-gov-external-sharing]
+
+**What this checks** — how widely SharePoint and OneDrive content can be shared outside your
+organisation.
+
+**Why it matters** — this is the outermost boundary on your content. The most permissive setting allows
+sharing with anyone at all, including through links that need no sign-in. Anonymous links are
+particularly worth reviewing: they can be forwarded, and whoever holds one has access.
+
+**What "ready" looks like** — sharing turned off, or limited to existing external users who have already
+been authenticated, counts as a pass. Allowing new external users is a warning. Allowing anonymous
+"anyone" links is a fail.
+
+**How to fix it** — in the SharePoint admin centre, go to **Policies → Sharing**. Tighten the tenant-wide
+setting, then loosen it for specific sites that genuinely need it, rather than leaving the whole tenant
+at its most permissive to serve a handful of sites.
+
+**Microsoft's guidance** — [Turn external sharing on or off](https://learn.microsoft.com/en-us/sharepoint/turn-external-sharing-on-or-off)
+
+## Default sharing link [#access-gov-default-link]
+
+**What this checks** — what kind of link users get by default when they click Share.
+
+**Why it matters** — this is a small setting with a large effect, because most people accept whatever
+default they are given. If the default is an "Anyone" link, every casually shared file becomes an
+anonymous link by accident. If the default is "specific people", the same casual click produces
+something scoped and revocable.
+
+**What "ready" looks like** — a default of specific people, or people in your organisation. A default of
+"Anyone with the link" is a fail.
+
+**How to fix it** — in the SharePoint admin centre, under **Policies → Sharing**, set the default link
+type. This is one of the highest-value changes on this page: it costs nothing, breaks nothing that
+already exists, and changes the outcome of thousands of future clicks.
+
+**Microsoft's guidance** — [Change the default sharing link](https://learn.microsoft.com/en-us/sharepoint/change-default-sharing-link)
+
+## External resharing [#access-gov-external-reshare]
+
+**What this checks** — whether external guests can pass shared content on to other people.
+
+**Why it matters** — if guests can reshare, your access list stops being something you control. You
+share a document with a partner organisation; someone there forwards it to a subcontractor you have
+never heard of, and there is no record on your side that it happened.
+
+**What "ready" looks like** — external resharing turned off.
+
+**How to fix it** — in the SharePoint admin centre, under **Policies → Sharing**, disable the option
+allowing guests to share items they do not own.
+
+**Microsoft's guidance** — [Turn external sharing on or off](https://learn.microsoft.com/en-us/sharepoint/turn-external-sharing-on-or-off)
+
+## Sharing domain restriction [#access-gov-domain-restriction]
+
+**What this checks** — whether external sharing is limited to an approved list of domains, or blocks a
+list of specific ones.
+
+**Why it matters** — an allow-list is the difference between "we can share with our partners" and "we
+can share with anyone on the internet". It is a straightforward way to keep external collaboration
+deliberate, and it makes accidental sharing to a personal email address simply fail.
+
+**What "ready" looks like** — an allow-list or a block-list configured. If external sharing is switched
+off entirely, this check passes automatically — the restriction is moot when nothing can be shared out.
+
+**How to fix it** — in the SharePoint admin centre, under **Policies → Sharing**, open the external
+sharing advanced settings and add the domains you actually work with. Gather that list from the business
+before switching it on, or you will block legitimate work on day one.
+
+**Microsoft's guidance** — [Restrict sharing to specific domains](https://learn.microsoft.com/en-us/sharepoint/restricted-domains-sharing)
+
+## SharePoint legacy authentication blocked [#access-gov-legacy-auth]
+
+**What this checks** — whether SharePoint still accepts older authentication protocols.
+
+**Why it matters** — the same problem as [legacy authentication in identity](/m365/copilot-identity#identity-legacy-auth),
+applied to where your files live. These older protocols cannot be governed by Conditional Access, so a
+sign-in using one bypasses the device and location rules you set — and SharePoint is where the content
+Copilot reads actually sits.
+
+**What "ready" looks like** — legacy authentication blocked in SharePoint. If it is still enabled, this
+is a fail.
+
+**How to fix it** — block it in the SharePoint admin centre's access control settings. As with the
+tenant-wide equivalent, check first for older applications or sync clients that still rely on it.
+
+**Microsoft's guidance** — [Control access from unmanaged devices](https://learn.microsoft.com/en-us/sharepoint/control-access-from-unmanaged-devices)
+
+## What these checks do not cover
+
+These five read your **tenant-wide settings** — the policy, not the practice. They tell you what is
+possible, not what has already happened.
+
+They cannot tell you which specific documents are currently overshared, or that a particular site was
+opened to the whole organisation three years ago. That needs a content-level review, which is a
+different and much larger exercise. A clean score here means your rules are sound going forward; it
+does not mean there is nothing to clean up behind you.
+
+## If these show "not measurable"
+
+Reading SharePoint tenant settings requires the SharePoint Administrator role in the delegated
+administration relationship with your IT provider. Read-only roles such as Global Reader are not
+sufficient for these particular settings. Until it is granted, these checks report as not measurable
+and are excluded from the grade rather than assumed to be fine.
+
+## Related
+
+- [Identity & Access](/m365/copilot-identity) — the other half of "what can a prompt reach"
+- [Sensitivity Labels](/m365/copilot-sensitivity-labels) — container labels set sharing rules per site
+- [Microsoft: prepare for Copilot by tackling oversharing](https://learn.microsoft.com/en-us/copilot/microsoft-365/microsoft-365-copilot-blueprint-oversharing)

@@ -1,0 +1,44 @@
+---
+title: Microsoft 365
+description: How SonicSaaS assesses a Microsoft 365 tenant — Copilot readiness scoring, what each check looks at, and what it takes to be ready.
+keywords: [Microsoft 365, M365, Copilot, readiness, tenant, assessment, security posture, MSP]
+---
+
+# Microsoft 365
+
+SonicSaaS connects to your Microsoft 365 tenant and reports on how it is configured — where it is
+strong, where it is exposed, and what to fix first.
+
+Everything here is **read-only**. SonicSaaS looks at settings and reports on them. It does not change
+your tenant, move your data, or read the contents of your files and email.
+
+## Copilot Readiness
+
+Microsoft 365 Copilot is an AI assistant that works across your documents, email, chats and meetings.
+The single most important thing to understand about it is this:
+
+> **Copilot inherits each user's existing access.** It does not have permissions of its own. If a
+> person can already open a file, Copilot can read that file and summarise it back to them. If your
+> files are shared more widely than you realise, Copilot is very good at finding them.
+
+That makes "are we ready for Copilot?" a question about how your tenant is set up, not a switch you
+flip. **Copilot Readiness** grades a tenant from A to F across seven areas and shows you exactly which
+checks are passing, which are failing, and what to do about each one.
+
+- **[Copilot Readiness](/m365/copilot-readiness)** — how the grade works, and the two scores you'll see
+
+Each area has its own page, explaining every individual check:
+
+- **[Licensing](/m365/copilot-licensing)** — the subscriptions Copilot needs before it can be turned on
+- **[Identity & Access](/m365/copilot-identity)** — how well sign-ins are protected
+- **[Sensitivity Labels](/m365/copilot-sensitivity-labels)** — marking sensitive documents so Copilot respects them
+- **[Data Loss Prevention](/m365/copilot-dlp)** — rules that stop sensitive information leaving
+- **[Access Governance](/m365/copilot-access-governance)** — how widely files are shared
+- **[Audit & Monitoring](/m365/copilot-audit)** — whether Copilot activity is recorded
+- **[Deployment & Adoption](/m365/copilot-adoption)** — whether the licences bought are being used
+
+## Related
+
+- [Microsoft Entra ID](/integrations/entra-id) — signing in to SonicSaaS with a Microsoft 365 account
+- [Permissions requested](/security/permissions-requested) — exactly what SonicSaaS is allowed to read
+- [Getting started](/getting-started) — first steps in SonicSaaS

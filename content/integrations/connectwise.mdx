@@ -129,6 +129,8 @@ After the first sync completes, walk this checklist to confirm the security role
 
 > **Connection test returns 403 Forbidden on a specific module.** The security role is missing the row for that module. Look at the failing endpoint in the SonicSaaS audit log and match it to the table in Step 1.
 
+> **Type or Status fields show read-only, or changes fail with 403 "security permission" error.** These features require additional API endpoint permissions. See [ConnectWise API Setup & Permissions](/integrations/connectwise-api-setup) for endpoint-level troubleshooting and a detailed permissions matrix.
+
 > **Company sync runs but returns zero rows.** The API member's **Level / Location / Business Unit** is too restrictive. Set them to the highest available values (Step 2.4).
 
 > **Migration write fails with `E_ACCESS` on agreement additions.** *Finance → Agreements* is missing **Add All** or **Delete All**. The migration tool requires both — without them, rollback cannot run and a partial write may be left in ConnectWise. Update the role and re-run the migration.

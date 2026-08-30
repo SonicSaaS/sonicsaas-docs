@@ -1,0 +1,71 @@
+---
+title: Audit & Monitoring
+description: The two audit checks in Copilot Readiness — whether unified audit logging is enabled, and how long audit records are retained.
+keywords: [audit log, unified audit log, Microsoft Purview, retention, Audit Standard, Audit Premium, compliance, investigation]
+---
+
+# Audit & Monitoring
+
+**Weight: 10 of 100.**
+
+Auditing is what lets you answer questions after the fact. Who opened that file? When did this account
+start behaving oddly? What did Copilot actually draw on when it produced that answer?
+
+Copilot interactions are recorded in the Microsoft 365 audit log alongside everything else — but only
+if auditing is switched on, and only for as long as records are kept. This area is insurance. You will
+not notice it until the day you need it, and on that day it is either there or it is not.
+
+## Unified audit log enabled [#audit-enabled]
+
+**What this checks** — whether unified audit logging is turned on for the tenant.
+
+**Why it matters** — with it off, activity across Microsoft 365 is not being recorded at all. No
+investigation is possible, because there is nothing to investigate. For most compliance frameworks this
+is also a straightforward finding against you.
+
+**What "ready" looks like** — unified audit logging enabled. It is on by default for most tenants, but
+it can be switched off, and older tenants sometimes have it off from a time when that was the default.
+
+**How to fix it** — turn it on in the Microsoft Purview portal under **Audit**. Note that it only
+records from the moment it is enabled — it cannot retroactively recover activity from the period it
+was off, which is why finding this switched off is worth acting on immediately rather than at the next
+review.
+
+**Microsoft's guidance** — [Turn auditing on or off](https://learn.microsoft.com/en-us/purview/audit-log-enable-disable)
+
+## Audit retention tier [#audit-retention]
+
+**What this checks** — how long your audit records are kept, based on the licences the tenant holds.
+
+**Why it matters** — retention decides how far back an investigation can look. This is not a
+theoretical limit. Security incidents are frequently discovered months after they begin, and if your
+records only go back six months, an incident that started seven months ago is simply invisible.
+
+**What "ready" looks like** — E5-grade compliance licensing, which provides Microsoft's Audit (Premium)
+tier and retains user audit records for **one year** by default. Without it, the Audit (Standard) tier
+retains records for **180 days** — about six months. That is a warning rather than a fail: 180 days is
+a real, usable audit trail, just a shorter one.
+
+**How to fix it** — if six months is not enough for your regulatory obligations or your risk appetite,
+this is a licensing decision rather than a setting. E5-grade compliance licensing raises the default to
+a year, and a ten-year retention add-on exists for organisations that need it. Audit retention policies
+let you tune retention per activity type once you are on the higher tier.
+
+**A note on how we determine this** — we read the retention tier from your licensing rather than from a
+per-tenant setting, because in Microsoft 365 the licence is genuinely what sets the default retention
+period. This keeps the check meaningful even where we cannot read the audit configuration directly.
+
+**Microsoft's guidance** — [Learn about auditing solutions](https://learn.microsoft.com/en-us/purview/audit-solutions-overview) · [Manage audit log retention policies](https://learn.microsoft.com/en-us/purview/audit-log-retention-policies)
+
+## If the enabled check shows "not measurable"
+
+Reading whether auditing is switched on requires Exchange administrative access in the delegated
+administration relationship with your IT provider. Where that is unavailable, the check is marked as a
+**blind spot** — meaning it is excluded both from your grade and from the confidence figure, so an
+access limitation on our side never counts against your score.
+
+## Related
+
+- [Copilot Readiness](/m365/copilot-readiness) — what "blind spot" means and how confidence works
+- [Licensing](/m365/copilot-licensing) — the Purview tier that sets your retention period
+- [Data Loss Prevention](/m365/copilot-dlp) — alerting on sensitive information in the moment, rather than after

@@ -1,0 +1,120 @@
+---
+title: Licensing
+description: The five licensing checks in Copilot Readiness — the Copilot add-on, assigned seats, an eligible base plan, Entra ID P1/P2, and your Purview compliance tier.
+keywords: [Copilot licence, licensing, SKU, seats, base plan, Entra ID P1, Entra ID P2, Purview, E3, E5, Business Premium]
+---
+
+# Licensing
+
+**Weight: 15 of 100.**
+
+Microsoft 365 Copilot is an **add-on**. You buy it on top of a subscription you already have, and both
+have to be in place before anyone can use it. This area checks that the pieces exist — and flags the
+neighbouring licences that decide how much of the rest of this assessment you can actually act on.
+
+A weak score here is rarely a security problem. It is a purchasing conversation.
+
+## Microsoft 365 Copilot licensed [#licensing-copilot-sku]
+
+**What this checks** — whether any Microsoft 365 Copilot licences have been bought for this tenant.
+
+**Why it matters** — nothing about Copilot works without it. This is the add-on itself.
+
+**What "ready" looks like** — at least one Copilot licence present. If there are none, this shows as a
+fail, but it does **not** drag down your Readiness score — Readiness is the pre-purchase number and
+deliberately ignores whether you own Copilot yet.
+
+**How to fix it** — purchase Microsoft 365 Copilot licences through your Microsoft partner or in the
+Microsoft 365 admin centre.
+
+**Microsoft's guidance** — [Microsoft 365 Copilot licence options](https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-licensing)
+
+## Copilot seats assigned [#licensing-seats]
+
+**What this checks** — whether the Copilot licences you bought have been given to actual people.
+
+**Why it matters** — an unassigned licence is money spent and not used. Buying seats and never handing
+them out is one of the most common ways Copilot spend gets wasted.
+
+**What "ready" looks like** — at least one purchased seat assigned to a user. Like the check above,
+this one only counts toward your Full score, not Readiness.
+
+**How to fix it** — in the Microsoft 365 admin centre, go to **Users → Active users**, select a person,
+and assign the Microsoft 365 Copilot licence.
+
+**Microsoft's guidance** — [Set up Microsoft 365 Copilot](https://learn.microsoft.com/en-us/copilot/microsoft-365/microsoft-365-copilot-setup)
+
+## Eligible base plan [#licensing-base]
+
+**What this checks** — whether the tenant has a Microsoft subscription that Copilot can be added to.
+
+**Why it matters** — Copilot cannot be bought on its own. Microsoft publishes a list of plans it can be
+added to, and it is broader than most people expect: the Microsoft 365 Business and Enterprise plans,
+Office 365 plans including E1, the F-series frontline plans, and several standalone plans such as
+Teams, Exchange, SharePoint, OneDrive, Visio and Project. There are separate eligible plan lists for
+government and education customers.
+
+**What "ready" looks like** — at least one plan from Microsoft's published eligibility list. Most
+organisations already have one and simply don't realise Copilot can be added to it.
+
+**How to fix it** — if no eligible plan is present, this is a conversation about which base subscription
+suits the organisation, not a setting to change. Note that the plan you hold also affects *which
+Copilot* you can buy — Microsoft sells a Business tier alongside the main add-on.
+
+**Microsoft's guidance** — [Microsoft 365 Copilot licence options](https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-licensing) lists every eligible plan, including the government and education variants.
+
+## Entra ID P1 or P2 [#licensing-entra-premium]
+
+**What this checks** — whether the tenant has Microsoft Entra ID P1 or P2. (Entra ID is the current name
+for what used to be called Azure Active Directory — it is the service that manages sign-ins.)
+
+**Why it matters** — Conditional Access lives in P1 and above. Conditional Access is the feature that
+lets you say "require multi-factor authentication for administrators" or "block sign-ins using old
+protocols". Several checks in [Identity & Access](/m365/copilot-identity) can only be satisfied
+properly if you have it. Without P1, your options there are limited to the free Security Defaults.
+
+**What "ready" looks like** — Entra ID P1 or P2 present, usually because it is bundled in Microsoft 365
+Business Premium, E3 or E5.
+
+**How to fix it** — Entra ID P1 comes with Business Premium, E3 and E5. If you have none of those, it
+can be bought as a standalone add-on.
+
+**Microsoft's guidance** — [Microsoft Entra ID licensing](https://learn.microsoft.com/en-us/entra/fundamentals/licensing) · [What is Conditional Access?](https://learn.microsoft.com/en-us/entra/identity/conditional-access/overview)
+
+## Purview compliance tier [#licensing-purview]
+
+> **This one is context, not a score.** It is shown on the report marked **not scored**, and it does
+> not affect your grade either way. It is here to tell you which recommendations elsewhere in this
+> report you are currently able to act on — not to mark you down for a purchasing decision.
+
+**What this checks** — which Microsoft Purview compliance tier the tenant holds.
+
+**Why it matters** — Purview is where sensitivity labels and data loss prevention rules live. The
+important thing to understand is that **the basics are not E5-only**. Microsoft 365 Business Premium and
+E3 both include manually applied sensitivity labels — including labels that apply encryption — and DLP
+policies. Those cover most of what this report recommends.
+
+What E5 adds is automation and scale: labels applied automatically rather than by hand, the full DLP
+feature set, and a longer audit retention window.
+
+**What you will see** — E5-grade compliance licensing present, or the E3 / Business tier. Neither is a
+failure. If you are on E3 or Business Premium, read it as "manual labelling and DLP are available to
+me; automatic labelling is not".
+
+**How to act on it** — focus on what your current tier allows. Publishing a small set of sensitivity
+labels and one or two DLP policies is available well below E5 and addresses most of the exposure.
+Treat E5 as an option to weigh once you have done that, not as a prerequisite for starting.
+
+**Why it is not scored** — audit retention is the one consequence of this tier that has a real
+operational effect, and that is already graded separately under
+[Audit & Monitoring](/m365/copilot-audit#audit-retention). Scoring the tier here as well meant a
+non-E5 tenant lost points twice in two different areas for a single purchasing decision, with no
+configuration change able to recover either. So the tier is reported, and scored once.
+
+**Microsoft's guidance** — [Learn about sensitivity labels](https://learn.microsoft.com/en-us/purview/sensitivity-labels) · [Learn about data loss prevention](https://learn.microsoft.com/en-us/purview/dlp-learn-about-dlp)
+
+## Related
+
+- [Copilot Readiness](/m365/copilot-readiness) — how the grade is put together
+- [Identity & Access](/m365/copilot-identity) — what Entra ID P1 unlocks
+- [Deployment & Adoption](/m365/copilot-adoption) — making sure the seats you bought get used
