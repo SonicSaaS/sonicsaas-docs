@@ -7,6 +7,7 @@ export default {
   "connectwise-migration": "ConnectWise Migration",
   adobe: "Adobe Seat Sync",
   huntress: "Huntress",
+  dnsfilter: "DNSFilter",
   "entra-id": "Microsoft Entra ID",
   splunk: "Splunk",
   ftp: "FTP Server",

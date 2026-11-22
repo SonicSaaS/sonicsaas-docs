@@ -1,0 +1,154 @@
+---
+title: DNSFilter
+description: Connect your DNSFilter MSP API key to see every customer organization and roaming agent, map organizations to companies, and compare active-agent counts with ConnectWise billing.
+keywords: [DNSFilter, DNS security, roaming agents, MSP, company mapping, active agents, billing reconciliation, ConnectWise]
+---
+
+# DNSFilter
+
+The DNSFilter integration reads the customer organizations under your DNSFilter MSP account, along with their networks and roaming agents. Map each organization to a company once, and SonicSaaS shows each company's **active roaming-agent count**, the quantity you bill on the DNSFilter agreement line.
+
+> **Read-only.** SonicSaaS only reads from DNSFilter. It never provisions, renames or bills anything in DNSFilter.
+
+## What It Provides
+
+- **Fleet agent grid**: every roaming agent behind your customers, with its organization, network, hostname, status, agent version and last sync
+- **Company mapping**: links each DNSFilter customer organization to a company, using exact name matches plus a manual picker
+- **Company DNSFilter tab**: per-company active-agent totals and that company's agent list
+- **Billing reconciliation**: compares active-agent counts with your ConnectWise agreement additions (see [Billing reconciliation](#billing-reconciliation))
+
+## Prerequisites
+
+- A DNSFilter **MSP API key**
+- To map organizations: [ConnectWise](/integrations/connectwise) connected (organizations map to ConnectWise-linked companies), plus the agreement permissions listed below
+- Permission to configure integrations in SonicSaaS (see [Permissions](#permissions))
+
+## Permissions
+
+| Task | Permission |
+|---|---|
+| Open **DNSFilter — Settings**, use **Test Connection** | `dnsfilter:sync.manage` or `platform:integrations.configure` |
+| Save or clear the API key | `platform:integrations.configure` |
+| Open the DNSFilter overview (agent grid) and a company's DNSFilter tab | `dnsfilter:users.read`, `psa:agreements.manage`, or `platform:integrations.configure` |
+| Open **DNSFilter — Company mapping** | Any of the above, or `dnsfilter:companies.read` |
+| See the organization rows on the mapping page | `psa:agreements.read` |
+| **Refresh organizations**, **Auto-link exact matches**, map or clear a company | `psa:agreements.manage` |
+
+The built-in DNSFilter roles grant:
+
+| Role | DNSFilter permissions |
+|---|---|
+| Admin | `companies.read`, `users.read`, `sync.execute`, `sync.manage` |
+| Operator | `companies.read`, `users.read`, `sync.execute` |
+| Viewer / Auditor | `companies.read`, `users.read` |
+
+## Step 1: Connect DNSFilter
+
+1. Go to **Integrations** and open **DNSFilter**, then click **Settings** (or open the DNSFilter overview and click **Settings** in the header)
+2. Enter your **API Key**
+3. Leave **MSP ID (optional)** blank to auto-detect it, or enter your DNSFilter MSP ID (a positive whole number)
+4. Click **Save**, then **Test Connection** to confirm the key authenticates with DNSFilter
+
+The API key is a secret. It is never shown again after saving, so you must re-enter it on every save. The MSP ID is not secret and stays filled in. Every request goes to DNSFilter's own API host. There is no endpoint field to set.
+
+> **When to set the MSP ID.** SonicSaaS auto-detects the MSP your key belongs to. If the key is linked to no MSP, or to more than one, the pull stops and asks you to set the MSP ID explicitly. SonicSaaS never guesses which MSP to read.
+
+**Clear credentials** removes this team's stored API key and disables the integration. Organization mappings and synced data are kept. The confirmation lists any child teams that inherit the key today. After the clear, they fall back to an ancestor team's key if one exists, or lose access. A cleared key can't be recovered, so to reconnect, enter it again.
+
+If a parent team manages DNSFilter for you, the settings page shows an inheritance banner explaining where the configuration comes from.
+
+## Step 2: Map organizations to companies
+
+Open **DNSFilter — Company mapping**: use the **Company mapping** link in the DNSFilter overview header, or go there directly if you only hold `dnsfilter:companies.read`. The page lists your DNSFilter customer organizations, each one's **Active agents** count, and the company it bills to.
+
+1. Click **Refresh organizations** to pull the latest organizations and agent counts from DNSFilter
+2. Click **Auto-link exact matches** to link every organization whose name matches a company **exactly**
+3. Use the company picker on each remaining row to map it by hand, or clear a mapping you no longer want
+
+Auto-linking runs only when you click the button, never as a side effect of a refresh. Matching is exact only, so naming each DNSFilter organization to match its company keeps auto-linking clean.
+
+**What's included:** only active customer (sub-)organizations managed by your MSP. Canceled organizations and your MSP's own organization are left out.
+
+**All-or-nothing refreshes:** a refresh saves only after DNSFilter returns the complete organization and agent listing. If any part fails, the previous data stays as it was, so a DNSFilter outage can never wipe out or undercount your organizations.
+
+## The DNSFilter overview
+
+Select **DNSFilter** in the sidebar's **Security** section to open the fleet overview. It shows one row per roaming agent saved by the last DNSFilter sync, across every company you can see. The page reads stored data only and makes no live call to DNSFilter.
+
+| Column | Shows |
+|---|---|
+| **Company** | The mapped company, or *Unmapped* if the agent's DNSFilter organization isn't mapped yet |
+| **DNSFilter org** | The DNSFilter organization the agent belongs to |
+| **Network** | The DNSFilter network the agent is on |
+| **Hostname** | The agent's hostname |
+| **Status** | DNSFilter's own status wording, shown verbatim |
+| **Agent version** | The roaming-agent version |
+| **Last sync** | When the agent last synced with DNSFilter |
+
+A value DNSFilter didn't report shows an em dash. The grid is paginated 50 rows per page, every column is sortable, and the default sort is **Last sync**, newest first.
+
+- **Search** matches hostname or friendly name
+- **Status** filters by the stored status values. A *(none)* option appears when some agents have no status
+- **Company** filters to one or more mapped companies
+- **Unmapped org** shows only agents whose organization isn't mapped. It and the Company filter cancel each other out
+- **Export CSV** downloads the current search, filters and sort, limited to the visible columns and capped at 50,000 agents
+
+With the sidebar company filter set, the grid, its status options and the export are scoped to that company, and the Company column, Company filter and **Unmapped org** toggle are hidden. A badge beside the title reads **Fleet** or **Company**.
+
+The header shows **Company mapping** only to users with `psa:agreements.manage` or `platform:integrations.configure`, and **Settings** only to users who can configure the integration.
+
+> **Agent grid vs. active-agent counts.** The grid lists every stored agent, whatever its status. The **Active agents** counts on the mapping page and company tab include only agents whose DNSFilter status is *active* and that sit on a network DNSFilter still lists.
+
+## Company DNSFilter tab
+
+A company's page shows a **DNSFilter** tab once the company is mapped to at least one DNSFilter organization and you hold one of the overview permissions above. The tab has two views:
+
+- **Overview** shows a **Mapped organizations** card with the company's **Total active agents** and, for each mapped organization, its active-agent count and when it was last seen. An organization missing from the latest pull reads *Not in the latest roster pull*. A **Billing reconciliation** card sits beside it, and users who can open the integration also see an **Open DNSFilter integration** link
+- **Agents** shows the same agent grid as the overview, scoped to this company: no Company column, but with search, the status filter, sorting and **Export CSV**
+
+## How syncing works
+
+DNSFilter data is refreshed by a single, complete pull that saves the organizations, their active-agent counts, and the network and agent inventory from the same read, so the counts and the agent rows always agree. Three things trigger that pull:
+
+- **Refresh organizations** on the Company mapping page (on demand)
+- The daily **Seat Sync Linkage Refresh** task, which also refreshes the other seat-sync vendor rosters and covers DNSFilter once credentials are saved
+- The **DNSFilter Network & Agent Inventory Sync** task, which is **disabled by default**. Turn it on from the [Schedules](/settings/schedules) page if you want an extra, independent cadence with its own operation history. It defaults to daily and can't run more often than every 4 hours
+
+Only one pull runs per team at a time. A pull that starts while another is running waits for it. Pulls are recorded in the audit log with counts only, never hostnames or names.
+
+## Billing reconciliation
+
+Where your billing setup matches, SonicSaaS compares each company's active-agent count (counted per machine) with the quantity on its DNSFilter agreement addition in ConnectWise. Small drift between a billing update and the next sync is tolerated: a gap must be larger than 2 agents, or larger than 5% of the billed quantity (rounded up), whichever is greater, before it's flagged.
+
+You can see the result:
+
+- At the top of the DNSFilter overview, as a one-row summary for DNSFilter
+- Under **Integrations → Reconciliation**, alongside other services
+- On each company's DNSFilter tab (**Billing reconciliation** card) and **Coverage** tab
+
+> **Note:** the DNSFilter rule recognises the billing line by its ConnectWise product name. If your catalog names the DNSFilter addition differently, the rule finds no billed line. SonicSaaS then stays quiet rather than raising false alerts, and the summary may read **Unverified**. It also reads **Unverified** until at least one DNSFilter organization has been synced and mapped.
+
+## Troubleshooting
+
+> **"This DNSFilter key is not associated with an MSP — set the MSP ID explicitly"** or **"…can act for several MSPs…"**: auto-detection couldn't pick a single MSP. Enter your MSP ID in **MSP ID (optional)** on the settings page and save.
+
+> **"MSP ID must be a positive whole number, or blank to auto-detect."**: the MSP ID field holds something other than digits. Correct it or clear it.
+
+> **"DNSFilter is not configured for this team"**: no API key is saved for this team. Connect DNSFilter on the settings page first.
+
+> **"DNSFilter pull already running"**: another refresh for your team ran too long and this one gave up waiting. Try again in a few minutes.
+
+> **"DNSFilter API returned HTTP …"**: DNSFilter answered with an error status. Re-enter the API key on the settings page and use **Test Connection** to confirm it authenticates.
+
+> **The overview says "Unable to load DNSFilter agents"**: check your permissions, or connect DNSFilter and run a refresh first.
+
+> **The mapping page says no organizations are synced yet**: a user with `psa:agreements.manage` needs to click **Refresh organizations** once.
+
+> **An agent shows as Unmapped**: its DNSFilter organization isn't linked to a company yet. Map it on the Company mapping page.
+
+## Related
+
+- [ConnectWise PSA Integration](/integrations/connectwise): connection, company sync, and agreements
+- [Duo Seat Sync](/integrations/duo) · [Avanan Seat Sync](/integrations/avanan): other seat-based integrations
+- [Schedules](/settings/schedules): enable or adjust the DNSFilter inventory sync
+- [Integrations Overview](/integrations): all available integrations
